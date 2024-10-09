@@ -23,13 +23,6 @@ header {
   padding: 0 1rem;
   white-space: pre-wrap;
 }
-.hidden {
-  display: none;
-  visibility: hidden;
-}
-.block {
-  display: flex;
-}
 p {
   margin: 1rem 0 0 0;
   min-width: 1px;

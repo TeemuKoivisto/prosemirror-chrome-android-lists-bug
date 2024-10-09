@@ -35,8 +35,8 @@
     fetch(link.href, fetchOpts);
   }
 })();
-function OrderedMap(content2) {
-  this.content = content2;
+function OrderedMap(content) {
+  this.content = content;
 }
 OrderedMap.prototype = {
   constructor: OrderedMap,
@@ -58,23 +58,23 @@ OrderedMap.prototype = {
   // given, the key of the binding will be replaced with that key.
   update: function(key, value, newKey) {
     var self = newKey && newKey != key ? this.remove(newKey) : this;
-    var found2 = self.find(key), content2 = self.content.slice();
+    var found2 = self.find(key), content = self.content.slice();
     if (found2 == -1) {
-      content2.push(newKey || key, value);
+      content.push(newKey || key, value);
     } else {
-      content2[found2 + 1] = value;
-      if (newKey) content2[found2] = newKey;
+      content[found2 + 1] = value;
+      if (newKey) content[found2] = newKey;
     }
-    return new OrderedMap(content2);
+    return new OrderedMap(content);
   },
   // :: (string) → OrderedMap
   // Return a map with the given key removed, if it existed.
   remove: function(key) {
     var found2 = this.find(key);
     if (found2 == -1) return this;
-    var content2 = this.content.slice();
-    content2.splice(found2, 2);
-    return new OrderedMap(content2);
+    var content = this.content.slice();
+    content.splice(found2, 2);
+    return new OrderedMap(content);
   },
   // :: (string, any) → OrderedMap
   // Add a new key to the start of the map.
@@ -84,18 +84,18 @@ OrderedMap.prototype = {
   // :: (string, any) → OrderedMap
   // Add a new key to the end of the map.
   addToEnd: function(key, value) {
-    var content2 = this.remove(key).content.slice();
-    content2.push(key, value);
-    return new OrderedMap(content2);
+    var content = this.remove(key).content.slice();
+    content.push(key, value);
+    return new OrderedMap(content);
   },
   // :: (string, string, any) → OrderedMap
   // Add a key after the given key. If `place` is not found, the new
   // key is added to the end.
   addBefore: function(place, key, value) {
-    var without = this.remove(key), content2 = without.content.slice();
+    var without = this.remove(key), content = without.content.slice();
     var found2 = without.find(place);
-    content2.splice(found2 == -1 ? content2.length : found2, 0, key, value);
-    return new OrderedMap(content2);
+    content.splice(found2 == -1 ? content.length : found2, 0, key, value);
+    return new OrderedMap(content);
   },
   // :: ((key: string, value: any))
   // Call the given function for each key/value pair in the map, in
@@ -147,9 +147,9 @@ OrderedMap.prototype = {
 };
 OrderedMap.from = function(value) {
   if (value instanceof OrderedMap) return value;
-  var content2 = [];
-  if (value) for (var prop in value) content2.push(prop, value[prop]);
-  return new OrderedMap(content2);
+  var content = [];
+  if (value) for (var prop in value) content.push(prop, value[prop]);
+  return new OrderedMap(content);
 };
 function findDiffStart(a, b, pos) {
   for (let i = 0; ; i++) {
@@ -209,12 +209,12 @@ class Fragment {
   /**
   @internal
   */
-  constructor(content2, size) {
-    this.content = content2;
+  constructor(content, size) {
+    this.content = content;
     this.size = size || 0;
     if (size == null)
-      for (let i = 0; i < content2.length; i++)
-        this.size += content2[i].nodeSize;
+      for (let i = 0; i < content.length; i++)
+        this.size += content[i].nodeSize;
   }
   /**
   Invoke a callback for all descendant nodes between the given two
@@ -266,14 +266,14 @@ class Fragment {
       return this;
     if (!this.size)
       return other;
-    let last = this.lastChild, first = other.firstChild, content2 = this.content.slice(), i = 0;
+    let last = this.lastChild, first = other.firstChild, content = this.content.slice(), i = 0;
     if (last.isText && last.sameMarkup(first)) {
-      content2[content2.length - 1] = last.withText(last.text + first.text);
+      content[content.length - 1] = last.withText(last.text + first.text);
       i = 1;
     }
     for (; i < other.content.length; i++)
-      content2.push(other.content[i]);
-    return new Fragment(content2, this.size + other.size);
+      content.push(other.content[i]);
+    return new Fragment(content, this.size + other.size);
   }
   /**
   Cut out the sub-fragment between the two given positions.
@@ -532,8 +532,8 @@ class Mark {
   /**
   @internal
   */
-  constructor(type2, attrs) {
-    this.type = type2;
+  constructor(type, attrs) {
+    this.type = type;
     this.attrs = attrs;
   }
   /**
@@ -614,11 +614,11 @@ class Mark {
   static fromJSON(schema2, json) {
     if (!json)
       throw new RangeError("Invalid input for Mark.fromJSON");
-    let type2 = schema2.marks[json.type];
-    if (!type2)
+    let type = schema2.marks[json.type];
+    if (!type)
       throw new RangeError(`There is no mark type ${json.type} in this schema`);
-    let mark = type2.create(json.attrs);
-    type2.checkAttrs(mark.attrs);
+    let mark = type.create(json.attrs);
+    type.checkAttrs(mark.attrs);
     return mark;
   }
   /**
@@ -664,8 +664,8 @@ class Slice {
   start/end/middle for such a node, depending on which sides are
   open.
   */
-  constructor(content2, openStart, openEnd) {
-    this.content = content2;
+  constructor(content, openStart, openEnd) {
+    this.content = content;
     this.openStart = openStart;
     this.openEnd = openEnd;
   }
@@ -679,8 +679,8 @@ class Slice {
   @internal
   */
   insertAt(pos, fragment) {
-    let content2 = insertInto(this.content, pos + this.openStart, fragment);
-    return content2 && new Slice(content2, this.openStart, this.openEnd);
+    let content = insertInto(this.content, pos + this.openStart, fragment);
+    return content && new Slice(content, this.openStart, this.openEnd);
   }
   /**
   @internal
@@ -738,25 +738,25 @@ class Slice {
   }
 }
 Slice.empty = new Slice(Fragment.empty, 0, 0);
-function removeRange(content2, from, to) {
-  let { index, offset } = content2.findIndex(from), child = content2.maybeChild(index);
-  let { index: indexTo, offset: offsetTo } = content2.findIndex(to);
+function removeRange(content, from, to) {
+  let { index, offset } = content.findIndex(from), child = content.maybeChild(index);
+  let { index: indexTo, offset: offsetTo } = content.findIndex(to);
   if (offset == from || child.isText) {
-    if (offsetTo != to && !content2.child(indexTo).isText)
+    if (offsetTo != to && !content.child(indexTo).isText)
       throw new RangeError("Removing non-flat range");
-    return content2.cut(0, from).append(content2.cut(to));
+    return content.cut(0, from).append(content.cut(to));
   }
   if (index != indexTo)
     throw new RangeError("Removing non-flat range");
-  return content2.replaceChild(index, child.copy(removeRange(child.content, from - offset - 1, to - offset - 1)));
+  return content.replaceChild(index, child.copy(removeRange(child.content, from - offset - 1, to - offset - 1)));
 }
-function insertInto(content2, dist, insert2, parent) {
-  let { index, offset } = content2.findIndex(dist), child = content2.maybeChild(index);
+function insertInto(content, dist, insert2, parent) {
+  let { index, offset } = content.findIndex(dist), child = content.maybeChild(index);
   if (offset == dist || child.isText) {
-    return content2.cut(0, dist).append(insert2).append(content2.cut(dist));
+    return content.cut(0, dist).append(insert2).append(content.cut(dist));
   }
   let inner = insertInto(child.content, dist - offset - 1, insert2);
-  return inner && content2.replaceChild(index, child.copy(inner));
+  return inner && content.replaceChild(index, child.copy(inner));
 }
 function replace($from, $to, slice) {
   if (slice.openStart > $from.depth)
@@ -773,8 +773,8 @@ function replaceOuter($from, $to, slice, depth) {
   } else if (!slice.content.size) {
     return close(node, replaceTwoWay($from, $to, depth));
   } else if (!slice.openStart && !slice.openEnd && $from.depth == depth && $to.depth == depth) {
-    let parent = $from.parent, content2 = parent.content;
-    return close(parent, content2.cut(0, $from.parentOffset).append(slice.content).append(content2.cut($to.parentOffset)));
+    let parent = $from.parent, content = parent.content;
+    return close(parent, content.cut(0, $from.parentOffset).append(slice.content).append(content.cut($to.parentOffset)));
   } else {
     let { start, end } = prepareSliceForReplace(slice, $from);
     return close(node, replaceThreeWay($from, start, end, $to, depth));
@@ -813,37 +813,37 @@ function addRange($start, $end, depth, target) {
   if ($end && $end.depth == depth && $end.textOffset)
     addNode($end.nodeBefore, target);
 }
-function close(node, content2) {
-  node.type.checkContent(content2);
-  return node.copy(content2);
+function close(node, content) {
+  node.type.checkContent(content);
+  return node.copy(content);
 }
 function replaceThreeWay($from, $start, $end, $to, depth) {
   let openStart = $from.depth > depth && joinable($from, $start, depth + 1);
   let openEnd = $to.depth > depth && joinable($end, $to, depth + 1);
-  let content2 = [];
-  addRange(null, $from, depth, content2);
+  let content = [];
+  addRange(null, $from, depth, content);
   if (openStart && openEnd && $start.index(depth) == $end.index(depth)) {
     checkJoin(openStart, openEnd);
-    addNode(close(openStart, replaceThreeWay($from, $start, $end, $to, depth + 1)), content2);
+    addNode(close(openStart, replaceThreeWay($from, $start, $end, $to, depth + 1)), content);
   } else {
     if (openStart)
-      addNode(close(openStart, replaceTwoWay($from, $start, depth + 1)), content2);
-    addRange($start, $end, depth, content2);
+      addNode(close(openStart, replaceTwoWay($from, $start, depth + 1)), content);
+    addRange($start, $end, depth, content);
     if (openEnd)
-      addNode(close(openEnd, replaceTwoWay($end, $to, depth + 1)), content2);
+      addNode(close(openEnd, replaceTwoWay($end, $to, depth + 1)), content);
   }
-  addRange($to, null, depth, content2);
-  return new Fragment(content2);
+  addRange($to, null, depth, content);
+  return new Fragment(content);
 }
 function replaceTwoWay($from, $to, depth) {
-  let content2 = [];
-  addRange(null, $from, depth, content2);
+  let content = [];
+  addRange(null, $from, depth, content);
   if ($from.depth > depth) {
-    let type2 = joinable($from, $to, depth + 1);
-    addNode(close(type2, replaceTwoWay($from, $to, depth + 1)), content2);
+    let type = joinable($from, $to, depth + 1);
+    addNode(close(type, replaceTwoWay($from, $to, depth + 1)), content);
   }
-  addRange($to, null, depth, content2);
-  return new Fragment(content2);
+  addRange($to, null, depth, content);
+  return new Fragment(content);
 }
 function prepareSliceForReplace(slice, $along) {
   let extra = $along.depth - slice.openStart, parent = $along.node(extra);
@@ -1183,11 +1183,11 @@ class Node {
   /**
   @internal
   */
-  constructor(type2, attrs, content2, marks = Mark.none) {
-    this.type = type2;
+  constructor(type, attrs, content, marks = Mark.none) {
+    this.type = type;
     this.attrs = attrs;
     this.marks = marks;
-    this.content = content2 || Fragment.empty;
+    this.content = content || Fragment.empty;
   }
   /**
   The size of this node, as defined by the integer-based [indexing
@@ -1293,17 +1293,17 @@ class Node {
   Check whether this node's markup correspond to the given type,
   attributes, and marks.
   */
-  hasMarkup(type2, attrs, marks) {
-    return this.type == type2 && compareDeep(this.attrs, attrs || type2.defaultAttrs || emptyAttrs) && Mark.sameSet(this.marks, marks || Mark.none);
+  hasMarkup(type, attrs, marks) {
+    return this.type == type && compareDeep(this.attrs, attrs || type.defaultAttrs || emptyAttrs) && Mark.sameSet(this.marks, marks || Mark.none);
   }
   /**
   Create a new node with the same markup as this node, containing
   the given content (or empty, if no content is given).
   */
-  copy(content2 = null) {
-    if (content2 == this.content)
+  copy(content = null) {
+    if (content == this.content)
       return this;
-    return new Node(this.type, this.attrs, content2, this.marks);
+    return new Node(this.type, this.attrs, content, this.marks);
   }
   /**
   Create a copy of this node, with the given set of marks instead
@@ -1332,8 +1332,8 @@ class Node {
     let $from = this.resolve(from), $to = this.resolve(to);
     let depth = includeParents ? 0 : $from.sharedDepth(to);
     let start = $from.start(depth), node = $from.node(depth);
-    let content2 = node.content.cut($from.pos - start, $to.pos - start);
-    return new Slice(content2, $from.depth - depth, $to.depth - depth);
+    let content = node.content.cut($from.pos - start, $to.pos - start);
+    return new Slice(content, $from.depth - depth, $to.depth - depth);
   }
   /**
   Replace the part of the document between the given positions with
@@ -1400,11 +1400,11 @@ class Node {
   Test whether a given mark or mark type occurs in this document
   between the two given positions.
   */
-  rangeHasMark(from, to, type2) {
+  rangeHasMark(from, to, type) {
     let found2 = false;
     if (to > from)
       this.nodesBetween(from, to, (node) => {
-        if (type2.isInSet(node.marks))
+        if (type.isInSet(node.marks))
           found2 = true;
         return !found2;
       });
@@ -1500,10 +1500,10 @@ class Node {
   Test whether replacing the range `from` to `to` (by index) with
   a node of the given type would leave the node's content valid.
   */
-  canReplaceWith(from, to, type2, marks) {
+  canReplaceWith(from, to, type, marks) {
     if (marks && !this.type.allowsMarks(marks))
       return false;
-    let start = this.contentMatchAt(from).matchType(type2);
+    let start = this.contentMatchAt(from).matchType(type);
     let end = start && start.matchFragment(this.content, to);
     return end ? end.validEnd : false;
   }
@@ -1568,8 +1568,8 @@ class Node {
         throw new RangeError("Invalid text node in JSON");
       return schema2.text(json.text, marks);
     }
-    let content2 = Fragment.fromJSON(schema2, json.content);
-    let node = schema2.nodeType(json.type).create(json.attrs, content2, marks);
+    let content = Fragment.fromJSON(schema2, json.content);
+    let node = schema2.nodeType(json.type).create(json.attrs, content, marks);
     node.type.checkAttrs(node.attrs);
     return node;
   }
@@ -1579,11 +1579,11 @@ class TextNode extends Node {
   /**
   @internal
   */
-  constructor(type2, attrs, content2, marks) {
-    super(type2, attrs, null, marks);
-    if (!content2)
+  constructor(type, attrs, content, marks) {
+    super(type, attrs, null, marks);
+    if (!content)
       throw new RangeError("Empty text nodes are not allowed");
-    this.text = content2;
+    this.text = content;
   }
   toString() {
     if (this.type.spec.toDebugString)
@@ -1653,9 +1653,9 @@ class ContentMatch {
   Match a node type, returning a match after that node if
   successful.
   */
-  matchType(type2) {
+  matchType(type) {
     for (let i = 0; i < this.next.length; i++)
-      if (this.next[i].type == type2)
+      if (this.next[i].type == type)
         return this.next[i].next;
     return null;
   }
@@ -1681,9 +1681,9 @@ class ContentMatch {
   */
   get defaultType() {
     for (let i = 0; i < this.next.length; i++) {
-      let { type: type2 } = this.next[i];
-      if (!(type2.isText || type2.hasRequiredAttrs()))
-        return type2;
+      let { type } = this.next[i];
+      if (!(type.isText || type.hasRequiredAttrs()))
+        return type;
     }
     return null;
   }
@@ -1712,10 +1712,10 @@ class ContentMatch {
       if (finished && (!toEnd || finished.validEnd))
         return Fragment.from(types.map((tp) => tp.createAndFill()));
       for (let i = 0; i < match.next.length; i++) {
-        let { type: type2, next } = match.next[i];
-        if (!(type2.isText || type2.hasRequiredAttrs()) && seen.indexOf(next) == -1) {
+        let { type, next } = match.next[i];
+        if (!(type.isText || type.hasRequiredAttrs()) && seen.indexOf(next) == -1) {
           seen.push(next);
-          let found2 = search(next, types.concat(type2));
+          let found2 = search(next, types.concat(type));
           if (found2)
             return found2;
         }
@@ -1752,10 +1752,10 @@ class ContentMatch {
         return result.reverse();
       }
       for (let i = 0; i < match.next.length; i++) {
-        let { type: type2, next } = match.next[i];
-        if (!type2.isLeaf && !type2.hasRequiredAttrs() && !(type2.name in seen) && (!current.type || next.validEnd)) {
-          active2.push({ match: type2.contentMatch, type: type2, via: current });
-          seen[type2.name] = true;
+        let { type, next } = match.next[i];
+        if (!type.isLeaf && !type.hasRequiredAttrs() && !(type.name in seen) && (!current.type || next.validEnd)) {
+          active2.push({ match: type.contentMatch, type, via: current });
+          seen[type.name] = true;
         }
       }
     }
@@ -1870,14 +1870,14 @@ function parseExprRange(stream, expr) {
   return { type: "range", min, max, expr };
 }
 function resolveName(stream, name) {
-  let types = stream.nodeTypes, type2 = types[name];
-  if (type2)
-    return [type2];
+  let types = stream.nodeTypes, type = types[name];
+  if (type)
+    return [type];
   let result = [];
   for (let typeName in types) {
-    let type3 = types[typeName];
-    if (type3.isInGroup(name))
-      result.push(type3);
+    let type2 = types[typeName];
+    if (type2.isInGroup(name))
+      result.push(type2);
   }
   if (result.length == 0)
     stream.err("No node type or group '" + name + "' found");
@@ -1890,12 +1890,12 @@ function parseExprAtom(stream) {
       stream.err("Missing closing paren");
     return expr;
   } else if (!/\W/.test(stream.next)) {
-    let exprs = resolveName(stream, stream.next).map((type2) => {
+    let exprs = resolveName(stream, stream.next).map((type) => {
       if (stream.inline == null)
-        stream.inline = type2.isInline;
-      else if (stream.inline != type2.isInline)
+        stream.inline = type.isInline;
+      else if (stream.inline != type.isInline)
         stream.err("Mixing inline and block content");
-      return { type: "name", value: type2 };
+      return { type: "name", value: type };
     });
     stream.pos++;
     return exprs.length == 1 ? exprs[0] : { type: "choice", exprs };
@@ -2017,9 +2017,9 @@ function checkForDeadEnds(match, stream) {
   for (let i = 0, work = [match]; i < work.length; i++) {
     let state2 = work[i], dead = !state2.validEnd, nodes = [];
     for (let j = 0; j < state2.next.length; j++) {
-      let { type: type2, next } = state2.next[j];
-      nodes.push(type2.name);
-      if (dead && !(type2.isText || type2.hasRequiredAttrs()))
+      let { type, next } = state2.next[j];
+      nodes.push(type.name);
+      if (dead && !(type.isText || type.hasRequiredAttrs()))
         dead = false;
       if (work.indexOf(next) == -1)
         work.push(next);
@@ -2053,10 +2053,10 @@ function computeAttrs(attrs, value) {
   }
   return built;
 }
-function checkAttrs(attrs, values, type2, name) {
+function checkAttrs(attrs, values, type, name) {
   for (let name2 in values)
     if (!(name2 in attrs))
-      throw new RangeError(`Unsupported attribute ${name2} for ${type2} of type ${name2}`);
+      throw new RangeError(`Unsupported attribute ${name2} for ${type} of type ${name2}`);
   for (let name2 in attrs) {
     let attr2 = attrs[name2];
     if (attr2.validate)
@@ -2159,20 +2159,20 @@ let NodeType$1 = class NodeType {
   `null`. Similarly `marks` may be `null` to default to the empty
   set of marks.
   */
-  create(attrs = null, content2, marks) {
+  create(attrs = null, content, marks) {
     if (this.isText)
       throw new Error("NodeType.create can't construct text nodes");
-    return new Node(this, this.computeAttrs(attrs), Fragment.from(content2), Mark.setFrom(marks));
+    return new Node(this, this.computeAttrs(attrs), Fragment.from(content), Mark.setFrom(marks));
   }
   /**
   Like [`create`](https://prosemirror.net/docs/ref/#model.NodeType.create), but check the given content
   against the node type's content restrictions, and throw an error
   if it doesn't match.
   */
-  createChecked(attrs = null, content2, marks) {
-    content2 = Fragment.from(content2);
-    this.checkContent(content2);
-    return new Node(this, this.computeAttrs(attrs), content2, Mark.setFrom(marks));
+  createChecked(attrs = null, content, marks) {
+    content = Fragment.from(content);
+    this.checkContent(content);
+    return new Node(this, this.computeAttrs(attrs), content, Mark.setFrom(marks));
   }
   /**
   Like [`create`](https://prosemirror.net/docs/ref/#model.NodeType.create), but see if it is
@@ -2182,31 +2182,31 @@ let NodeType$1 = class NodeType {
   always be created, this will always succeed if you pass null or
   `Fragment.empty` as content.
   */
-  createAndFill(attrs = null, content2, marks) {
+  createAndFill(attrs = null, content, marks) {
     attrs = this.computeAttrs(attrs);
-    content2 = Fragment.from(content2);
-    if (content2.size) {
-      let before = this.contentMatch.fillBefore(content2);
+    content = Fragment.from(content);
+    if (content.size) {
+      let before = this.contentMatch.fillBefore(content);
       if (!before)
         return null;
-      content2 = before.append(content2);
+      content = before.append(content);
     }
-    let matched = this.contentMatch.matchFragment(content2);
+    let matched = this.contentMatch.matchFragment(content);
     let after = matched && matched.fillBefore(Fragment.empty, true);
     if (!after)
       return null;
-    return new Node(this, attrs, content2.append(after), Mark.setFrom(marks));
+    return new Node(this, attrs, content.append(after), Mark.setFrom(marks));
   }
   /**
   Returns true if the given fragment is valid content for this node
   type.
   */
-  validContent(content2) {
-    let result = this.contentMatch.matchFragment(content2);
+  validContent(content) {
+    let result = this.contentMatch.matchFragment(content);
     if (!result || !result.validEnd)
       return false;
-    for (let i = 0; i < content2.childCount; i++)
-      if (!this.allowsMarks(content2.child(i).marks))
+    for (let i = 0; i < content.childCount; i++)
+      if (!this.allowsMarks(content.child(i).marks))
         return false;
     return true;
   }
@@ -2215,9 +2215,9 @@ let NodeType$1 = class NodeType {
   node type.
   @internal
   */
-  checkContent(content2) {
-    if (!this.validContent(content2))
-      throw new RangeError(`Invalid content for node ${this.name}: ${content2.toString().slice(0, 50)}`);
+  checkContent(content) {
+    if (!this.validContent(content))
+      throw new RangeError(`Invalid content for node ${this.name}: ${content.toString().slice(0, 50)}`);
   }
   /**
   @internal
@@ -2275,8 +2275,8 @@ let NodeType$1 = class NodeType {
     return result;
   }
 };
-function validateType(typeName, attrName, type2) {
-  let types = type2.split("|");
+function validateType(typeName, attrName, type) {
+  let types = type.split("|");
   return (value) => {
     let name = value === null ? "null" : typeof value;
     if (types.indexOf(name) < 0)
@@ -2375,21 +2375,21 @@ class Schema {
     for (let prop in this.nodes) {
       if (prop in this.marks)
         throw new RangeError(prop + " can not be both a node and a mark");
-      let type2 = this.nodes[prop], contentExpr = type2.spec.content || "", markExpr = type2.spec.marks;
-      type2.contentMatch = contentExprCache[contentExpr] || (contentExprCache[contentExpr] = ContentMatch.parse(contentExpr, this.nodes));
-      type2.inlineContent = type2.contentMatch.inlineContent;
-      if (type2.spec.linebreakReplacement) {
+      let type = this.nodes[prop], contentExpr = type.spec.content || "", markExpr = type.spec.marks;
+      type.contentMatch = contentExprCache[contentExpr] || (contentExprCache[contentExpr] = ContentMatch.parse(contentExpr, this.nodes));
+      type.inlineContent = type.contentMatch.inlineContent;
+      if (type.spec.linebreakReplacement) {
         if (this.linebreakReplacement)
           throw new RangeError("Multiple linebreak nodes defined");
-        if (!type2.isInline || !type2.isLeaf)
+        if (!type.isInline || !type.isLeaf)
           throw new RangeError("Linebreak replacement nodes must be inline leaf nodes");
-        this.linebreakReplacement = type2;
+        this.linebreakReplacement = type;
       }
-      type2.markSet = markExpr == "_" ? null : markExpr ? gatherMarks(this, markExpr.split(" ")) : markExpr == "" || !type2.inlineContent ? [] : null;
+      type.markSet = markExpr == "_" ? null : markExpr ? gatherMarks(this, markExpr.split(" ")) : markExpr == "" || !type.inlineContent ? [] : null;
     }
     for (let prop in this.marks) {
-      let type2 = this.marks[prop], excl = type2.spec.excludes;
-      type2.excluded = excl == null ? [type2] : excl == "" ? [] : gatherMarks(this, excl.split(" "));
+      let type = this.marks[prop], excl = type.spec.excludes;
+      type.excluded = excl == null ? [type] : excl == "" ? [] : gatherMarks(this, excl.split(" "));
     }
     this.nodeFromJSON = this.nodeFromJSON.bind(this);
     this.markFromJSON = this.markFromJSON.bind(this);
@@ -2402,30 +2402,30 @@ class Schema {
   `content` may be a `Fragment`, `null`, a `Node`, or an array of
   nodes.
   */
-  node(type2, attrs = null, content2, marks) {
-    if (typeof type2 == "string")
-      type2 = this.nodeType(type2);
-    else if (!(type2 instanceof NodeType$1))
-      throw new RangeError("Invalid node type: " + type2);
-    else if (type2.schema != this)
-      throw new RangeError("Node type from different schema used (" + type2.name + ")");
-    return type2.createChecked(attrs, content2, marks);
+  node(type, attrs = null, content, marks) {
+    if (typeof type == "string")
+      type = this.nodeType(type);
+    else if (!(type instanceof NodeType$1))
+      throw new RangeError("Invalid node type: " + type);
+    else if (type.schema != this)
+      throw new RangeError("Node type from different schema used (" + type.name + ")");
+    return type.createChecked(attrs, content, marks);
   }
   /**
   Create a text node in the schema. Empty text nodes are not
   allowed.
   */
   text(text2, marks) {
-    let type2 = this.nodes.text;
-    return new TextNode(type2, type2.defaultAttrs, text2, Mark.setFrom(marks));
+    let type = this.nodes.text;
+    return new TextNode(type, type.defaultAttrs, text2, Mark.setFrom(marks));
   }
   /**
   Create a mark with the given type and attributes.
   */
-  mark(type2, attrs) {
-    if (typeof type2 == "string")
-      type2 = this.marks[type2];
-    return type2.create(attrs);
+  mark(type, attrs) {
+    if (typeof type == "string")
+      type = this.marks[type];
+    return type.create(attrs);
   }
   /**
   Deserialize a node from its JSON representation. This method is
@@ -2648,21 +2648,21 @@ const ignoreTags = {
 };
 const listTags = { ol: true, ul: true };
 const OPT_PRESERVE_WS = 1, OPT_PRESERVE_WS_FULL = 2, OPT_OPEN_LEFT = 4;
-function wsOptionsFor(type2, preserveWhitespace, base2) {
+function wsOptionsFor(type, preserveWhitespace, base2) {
   if (preserveWhitespace != null)
     return (preserveWhitespace ? OPT_PRESERVE_WS : 0) | (preserveWhitespace === "full" ? OPT_PRESERVE_WS_FULL : 0);
-  return type2 && type2.whitespace == "pre" ? OPT_PRESERVE_WS | OPT_PRESERVE_WS_FULL : base2 & ~OPT_OPEN_LEFT;
+  return type && type.whitespace == "pre" ? OPT_PRESERVE_WS | OPT_PRESERVE_WS_FULL : base2 & ~OPT_OPEN_LEFT;
 }
 class NodeContext {
-  constructor(type2, attrs, marks, solid, match, options) {
-    this.type = type2;
+  constructor(type, attrs, marks, solid, match, options) {
+    this.type = type;
     this.attrs = attrs;
     this.marks = marks;
     this.solid = solid;
     this.options = options;
     this.content = [];
     this.activeMarks = Mark.none;
-    this.match = match || (options & OPT_OPEN_LEFT ? null : type2.contentMatch);
+    this.match = match || (options & OPT_OPEN_LEFT ? null : type.contentMatch);
   }
   findWrapping(node) {
     if (!this.match) {
@@ -2694,10 +2694,10 @@ class NodeContext {
           this.content[this.content.length - 1] = text2.withText(text2.text.slice(0, text2.text.length - m[0].length));
       }
     }
-    let content2 = Fragment.from(this.content);
+    let content = Fragment.from(this.content);
     if (!openEnd && this.match)
-      content2 = content2.append(this.match.fillBefore(Fragment.empty, true));
-    return this.type ? this.type.create(this.attrs, content2, this.marks) : content2;
+      content = content.append(this.match.fillBefore(Fragment.empty, true));
+    return this.type ? this.type.create(this.attrs, content, this.marks) : content;
   }
   inlineContext(node) {
     if (this.type)
@@ -2940,29 +2940,29 @@ class ParseContext {
   }
   // Try to start a node of the given type, adjusting the context when
   // necessary.
-  enter(type2, attrs, marks, preserveWS) {
-    let innerMarks = this.findPlace(type2.create(attrs), marks);
+  enter(type, attrs, marks, preserveWS) {
+    let innerMarks = this.findPlace(type.create(attrs), marks);
     if (innerMarks)
-      innerMarks = this.enterInner(type2, attrs, marks, true, preserveWS);
+      innerMarks = this.enterInner(type, attrs, marks, true, preserveWS);
     return innerMarks;
   }
   // Open a node of the given type
-  enterInner(type2, attrs, marks, solid = false, preserveWS) {
+  enterInner(type, attrs, marks, solid = false, preserveWS) {
     this.closeExtra();
     let top = this.top;
-    top.match = top.match && top.match.matchType(type2);
-    let options = wsOptionsFor(type2, preserveWS, top.options);
+    top.match = top.match && top.match.matchType(type);
+    let options = wsOptionsFor(type, preserveWS, top.options);
     if (top.options & OPT_OPEN_LEFT && top.content.length == 0)
       options |= OPT_OPEN_LEFT;
     let applyMarks = Mark.none;
     marks = marks.filter((m) => {
-      if (top.type ? top.type.allowsMarkType(m.type) : markMayApply(m.type, type2)) {
+      if (top.type ? top.type.allowsMarkType(m.type) : markMayApply(m.type, type)) {
         applyMarks = m.addToSet(applyMarks);
         return false;
       }
       return true;
     });
-    this.nodes.push(new NodeContext(type2, attrs, applyMarks, solid, null, options));
+    this.nodes.push(new NodeContext(type, attrs, applyMarks, solid, null, options));
     this.open++;
     return marks;
   }
@@ -2993,9 +2993,9 @@ class ParseContext {
     this.closeExtra();
     let pos = 0;
     for (let i = this.open; i >= 0; i--) {
-      let content2 = this.nodes[i].content;
-      for (let j = content2.length - 1; j >= 0; j--)
-        pos += content2[j].nodeSize;
+      let content = this.nodes[i].content;
+      for (let j = content.length - 1; j >= 0; j--)
+        pos += content[j].nodeSize;
       if (i)
         pos++;
     }
@@ -3015,11 +3015,11 @@ class ParseContext {
           this.find[i].pos = this.currentPos;
       }
   }
-  findAround(parent, content2, before) {
-    if (parent != content2 && this.find)
+  findAround(parent, content, before) {
+    if (parent != content && this.find)
       for (let i = 0; i < this.find.length; i++) {
         if (this.find[i].pos == null && parent.nodeType == 1 && parent.contains(this.find[i].node)) {
-          let pos = content2.compareDocumentPosition(this.find[i].node);
+          let pos = content.compareDocumentPosition(this.find[i].node);
           if (pos & (before ? 2 : 4))
             this.find[i].pos = this.currentPos;
         }
@@ -3070,9 +3070,9 @@ class ParseContext {
           return deflt;
       }
     for (let name in this.parser.schema.nodes) {
-      let type2 = this.parser.schema.nodes[name];
-      if (type2.isTextblock && type2.defaultAttrs)
-        return type2;
+      let type = this.parser.schema.nodes[name];
+      if (type.isTextblock && type.defaultAttrs)
+        return type;
     }
   }
 }
@@ -3107,8 +3107,8 @@ function markMayApply(markType, nodeType) {
     let seen = [], scan = (match) => {
       seen.push(match);
       for (let i = 0; i < match.edgeCount; i++) {
-        let { type: type2, next } = match.edge(i);
-        if (type2 == nodeType)
+        let { type, next } = match.edge(i);
+        if (type == nodeType)
           return true;
         if (seen.indexOf(next) < 0 && scan(next))
           return true;
@@ -3624,10 +3624,10 @@ class Step {
   static fromJSON(schema2, json) {
     if (!json || !json.stepType)
       throw new RangeError("Invalid input for Step.fromJSON");
-    let type2 = stepsByID[json.stepType];
-    if (!type2)
+    let type = stepsByID[json.stepType];
+    if (!type)
       throw new RangeError(`No step type ${json.stepType} defined`);
-    return type2.fromJSON(schema2, json);
+    return type.fromJSON(schema2, json);
   }
   /**
   To be able to serialize steps to JSON, each step needs a string
@@ -4155,28 +4155,28 @@ function lift(tr, range, target) {
   tr.step(new ReplaceAroundStep(start, end, gapStart, gapEnd, new Slice(before.append(after), openStart, openEnd), before.size - openStart, true));
 }
 function wrap(tr, range, wrappers) {
-  let content2 = Fragment.empty;
+  let content = Fragment.empty;
   for (let i = wrappers.length - 1; i >= 0; i--) {
-    if (content2.size) {
-      let match = wrappers[i].type.contentMatch.matchFragment(content2);
+    if (content.size) {
+      let match = wrappers[i].type.contentMatch.matchFragment(content);
       if (!match || !match.validEnd)
         throw new RangeError("Wrapper type given to Transform.wrap does not form valid content of its parent wrapper");
     }
-    content2 = Fragment.from(wrappers[i].type.create(wrappers[i].attrs, content2));
+    content = Fragment.from(wrappers[i].type.create(wrappers[i].attrs, content));
   }
   let start = range.start, end = range.end;
-  tr.step(new ReplaceAroundStep(start, end, start, end, new Slice(content2, 0, 0), wrappers.length, true));
+  tr.step(new ReplaceAroundStep(start, end, start, end, new Slice(content, 0, 0), wrappers.length, true));
 }
-function setBlockType(tr, from, to, type2, attrs) {
-  if (!type2.isTextblock)
+function setBlockType(tr, from, to, type, attrs) {
+  if (!type.isTextblock)
     throw new RangeError("Type given to setBlockType should be a textblock");
   let mapFrom = tr.steps.length;
   tr.doc.nodesBetween(from, to, (node, pos) => {
     let attrsHere = typeof attrs == "function" ? attrs(node) : attrs;
-    if (node.isTextblock && !node.hasMarkup(type2, attrsHere) && canChangeType(tr.doc, tr.mapping.slice(mapFrom).map(pos), type2)) {
+    if (node.isTextblock && !node.hasMarkup(type, attrsHere) && canChangeType(tr.doc, tr.mapping.slice(mapFrom).map(pos), type)) {
       let convertNewlines = null;
-      if (type2.schema.linebreakReplacement) {
-        let pre = type2.whitespace == "pre", supportLinebreak = !!type2.contentMatch.matchType(type2.schema.linebreakReplacement);
+      if (type.schema.linebreakReplacement) {
+        let pre = type.whitespace == "pre", supportLinebreak = !!type.contentMatch.matchType(type.schema.linebreakReplacement);
         if (pre && !supportLinebreak)
           convertNewlines = false;
         else if (!pre && supportLinebreak)
@@ -4184,10 +4184,10 @@ function setBlockType(tr, from, to, type2, attrs) {
       }
       if (convertNewlines === false)
         replaceLinebreaks(tr, node, pos, mapFrom);
-      clearIncompatible(tr, tr.mapping.slice(mapFrom).map(pos, 1), type2, void 0, convertNewlines === null);
+      clearIncompatible(tr, tr.mapping.slice(mapFrom).map(pos, 1), type, void 0, convertNewlines === null);
       let mapping = tr.mapping.slice(mapFrom);
       let startM = mapping.map(pos, 1), endM = mapping.map(pos + node.nodeSize, 1);
-      tr.step(new ReplaceAroundStep(startM, endM, startM + 1, endM - 1, new Slice(Fragment.from(type2.create(attrsHere, null, node.marks)), 0, 0), 1, true));
+      tr.step(new ReplaceAroundStep(startM, endM, startM + 1, endM - 1, new Slice(Fragment.from(type.create(attrsHere, null, node.marks)), 0, 0), 1, true));
       if (convertNewlines === true)
         replaceNewlines(tr, node, pos, mapFrom);
       return false;
@@ -4213,26 +4213,26 @@ function replaceLinebreaks(tr, node, pos, mapFrom) {
     }
   });
 }
-function canChangeType(doc2, pos, type2) {
+function canChangeType(doc2, pos, type) {
   let $pos = doc2.resolve(pos), index = $pos.index();
-  return $pos.parent.canReplaceWith(index, index + 1, type2);
+  return $pos.parent.canReplaceWith(index, index + 1, type);
 }
-function setNodeMarkup(tr, pos, type2, attrs, marks) {
+function setNodeMarkup(tr, pos, type, attrs, marks) {
   let node = tr.doc.nodeAt(pos);
   if (!node)
     throw new RangeError("No node at given position");
-  if (!type2)
-    type2 = node.type;
-  let newNode = type2.create(attrs, null, marks || node.marks);
+  if (!type)
+    type = node.type;
+  let newNode = type.create(attrs, null, marks || node.marks);
   if (node.isLeaf)
     return tr.replaceWith(pos, pos + node.nodeSize, newNode);
-  if (!type2.validContent(node.content))
-    throw new RangeError("Invalid content for node type " + type2.name);
+  if (!type.validContent(node.content))
+    throw new RangeError("Invalid content for node type " + type.name);
   tr.step(new ReplaceAroundStep(pos, pos + node.nodeSize, pos + 1, pos + node.nodeSize - 1, new Slice(Fragment.from(newNode), 0, 0), 1, true));
 }
 function canSplit(doc2, pos, depth = 1, typesAfter) {
   let $pos = doc2.resolve(pos), base2 = $pos.depth - depth;
-  let innerType = $pos.parent;
+  let innerType = typesAfter && typesAfter[typesAfter.length - 1] || $pos.parent;
   if (base2 < 0 || $pos.parent.type.spec.isolating || !$pos.parent.canReplace($pos.index(), $pos.parent.childCount) || !innerType.type.validContent($pos.parent.content.cutByIndex($pos.index(), $pos.parent.childCount)))
     return false;
   for (let d = $pos.depth - 1, i = depth - 2; d > base2; d--, i--) {
@@ -4240,12 +4240,16 @@ function canSplit(doc2, pos, depth = 1, typesAfter) {
     if (node.type.spec.isolating)
       return false;
     let rest = node.content.cutByIndex(index2, node.childCount);
-    let after = node;
+    let overrideChild = typesAfter && typesAfter[i + 1];
+    if (overrideChild)
+      rest = rest.replaceChild(0, overrideChild.type.create(overrideChild.attrs));
+    let after = typesAfter && typesAfter[i] || node;
     if (!node.canReplace(index2 + 1, node.childCount) || !after.type.validContent(rest))
       return false;
   }
   let index = $pos.indexAfter(base2);
-  return $pos.node(base2).canReplaceWith(index, index, $pos.node(base2 + 1).type);
+  let baseType = typesAfter && typesAfter[0];
+  return $pos.node(base2).canReplaceWith(index, index, baseType ? baseType.type : $pos.node(base2 + 1).type);
 }
 function split(tr, pos, depth = 1, typesAfter) {
   let $pos = tr.doc.resolve(pos), before = Fragment.empty, after = Fragment.empty;
@@ -4286,18 +4290,18 @@ function dropPoint(doc2, pos, slice) {
   let $pos = doc2.resolve(pos);
   if (!slice.content.size)
     return pos;
-  let content2 = slice.content;
+  let content = slice.content;
   for (let i = 0; i < slice.openStart; i++)
-    content2 = content2.firstChild.content;
+    content = content.firstChild.content;
   for (let pass = 1; pass <= (slice.openStart == 0 && slice.size ? 2 : 1); pass++) {
     for (let d = $pos.depth; d >= 0; d--) {
       let bias = d == $pos.depth ? 0 : $pos.pos <= ($pos.start(d + 1) + $pos.end(d + 1)) / 2 ? -1 : 1;
       let insertPos = $pos.index(d) + (bias > 0 ? 1 : 0);
       let parent = $pos.node(d), fits = false;
       if (pass == 1) {
-        fits = parent.canReplace(insertPos, insertPos, content2);
+        fits = parent.canReplace(insertPos, insertPos, content);
       } else {
-        let wrapping = parent.contentMatchAt(insertPos).findWrapping(content2.firstChild.type);
+        let wrapping = parent.contentMatchAt(insertPos).findWrapping(content.firstChild.type);
         fits = wrapping && parent.canReplaceWith(insertPos, insertPos, wrapping[0]);
       }
       if (fits)
@@ -4349,13 +4353,13 @@ class Fitter {
     let $from = this.$from, $to = this.close(moveInline < 0 ? this.$to : $from.doc.resolve(moveInline));
     if (!$to)
       return null;
-    let content2 = this.placed, openStart = $from.depth, openEnd = $to.depth;
-    while (openStart && openEnd && content2.childCount == 1) {
-      content2 = content2.firstChild.content;
+    let content = this.placed, openStart = $from.depth, openEnd = $to.depth;
+    while (openStart && openEnd && content.childCount == 1) {
+      content = content.firstChild.content;
       openStart--;
       openEnd--;
     }
-    let slice = new Slice(content2, openStart, openEnd);
+    let slice = new Slice(content, openStart, openEnd);
     if (moveInline > -1)
       return new ReplaceAroundStep($from.pos, moveInline, this.$to.pos, this.$to.end(), slice, placedSize);
     if (slice.size || $from.pos != this.$to.pos)
@@ -4388,8 +4392,8 @@ class Fitter {
         }
         let first = fragment.firstChild;
         for (let frontierDepth = this.depth; frontierDepth >= 0; frontierDepth--) {
-          let { type: type2, match } = this.frontier[frontierDepth], wrap2, inject = null;
-          if (pass == 1 && (first ? match.matchType(first.type) || (inject = match.fillBefore(Fragment.from(first), false)) : parent && type2.compatibleContent(parent.type)))
+          let { type, match } = this.frontier[frontierDepth], wrap2, inject = null;
+          if (pass == 1 && (first ? match.matchType(first.type) || (inject = match.fillBefore(Fragment.from(first), false)) : parent && type.compatibleContent(parent.type)))
             return { sliceDepth, frontierDepth, parent, inject };
           else if (pass == 2 && first && (wrap2 = match.findWrapping(first.type)))
             return { sliceDepth, frontierDepth, parent, wrap: wrap2 };
@@ -4400,21 +4404,21 @@ class Fitter {
     }
   }
   openMore() {
-    let { content: content2, openStart, openEnd } = this.unplaced;
-    let inner = contentAt(content2, openStart);
+    let { content, openStart, openEnd } = this.unplaced;
+    let inner = contentAt(content, openStart);
     if (!inner.childCount || inner.firstChild.isLeaf)
       return false;
-    this.unplaced = new Slice(content2, openStart + 1, Math.max(openEnd, inner.size + openStart >= content2.size - openEnd ? openStart + 1 : 0));
+    this.unplaced = new Slice(content, openStart + 1, Math.max(openEnd, inner.size + openStart >= content.size - openEnd ? openStart + 1 : 0));
     return true;
   }
   dropNode() {
-    let { content: content2, openStart, openEnd } = this.unplaced;
-    let inner = contentAt(content2, openStart);
+    let { content, openStart, openEnd } = this.unplaced;
+    let inner = contentAt(content, openStart);
     if (inner.childCount <= 1 && openStart > 0) {
-      let openAtEnd = content2.size - openStart <= openStart + inner.size;
-      this.unplaced = new Slice(dropFromFragment(content2, openStart - 1, 1), openStart - 1, openAtEnd ? openStart - 1 : openEnd);
+      let openAtEnd = content.size - openStart <= openStart + inner.size;
+      this.unplaced = new Slice(dropFromFragment(content, openStart - 1, 1), openStart - 1, openAtEnd ? openStart - 1 : openEnd);
     } else {
-      this.unplaced = new Slice(dropFromFragment(content2, openStart, 1), openStart, openEnd);
+      this.unplaced = new Slice(dropFromFragment(content, openStart, 1), openStart, openEnd);
     }
   }
   // Move content from the unplaced slice at `sliceDepth` to the
@@ -4429,7 +4433,7 @@ class Fitter {
     let slice = this.unplaced, fragment = parent ? parent.content : slice.content;
     let openStart = slice.openStart - sliceDepth;
     let taken = 0, add = [];
-    let { match, type: type2 } = this.frontier[frontierDepth];
+    let { match, type } = this.frontier[frontierDepth];
     if (inject) {
       for (let i = 0; i < inject.childCount; i++)
         add.push(inject.child(i));
@@ -4443,7 +4447,7 @@ class Fitter {
       taken++;
       if (taken > 1 || openStart == 0 || next.content.size) {
         match = matches2;
-        add.push(closeNodeStart(next.mark(type2.allowedMarks(next.marks)), taken == 1 ? openStart : 0, taken == fragment.childCount ? openEndCount : -1));
+        add.push(closeNodeStart(next.mark(type.allowedMarks(next.marks)), taken == 1 ? openStart : 0, taken == fragment.childCount ? openEndCount : -1));
       }
     }
     let toEnd = taken == fragment.childCount;
@@ -4473,14 +4477,14 @@ class Fitter {
   }
   findCloseLevel($to) {
     scan: for (let i = Math.min(this.depth, $to.depth); i >= 0; i--) {
-      let { match, type: type2 } = this.frontier[i];
+      let { match, type } = this.frontier[i];
       let dropInner = i < $to.depth && $to.end(i + 1) == $to.pos + ($to.depth - (i + 1));
-      let fit = contentAfterFits($to, i, type2, match, dropInner);
+      let fit = contentAfterFits($to, i, type, match, dropInner);
       if (!fit)
         continue;
       for (let d = i - 1; d >= 0; d--) {
-        let { match: match2, type: type3 } = this.frontier[d];
-        let matches2 = contentAfterFits($to, d, type3, match2, true);
+        let { match: match2, type: type2 } = this.frontier[d];
+        let matches2 = contentAfterFits($to, d, type2, match2, true);
         if (!matches2 || matches2.childCount)
           continue scan;
       }
@@ -4502,11 +4506,11 @@ class Fitter {
     }
     return $to;
   }
-  openFrontierNode(type2, attrs = null, content2) {
+  openFrontierNode(type, attrs = null, content) {
     let top = this.frontier[this.depth];
-    top.match = top.match.matchType(type2);
-    this.placed = addToFragment(this.placed, this.depth, Fragment.from(type2.create(attrs, content2)));
-    this.frontier.push({ type: type2, match: type2.contentMatch });
+    top.match = top.match.matchType(type);
+    this.placed = addToFragment(this.placed, this.depth, Fragment.from(type.create(attrs, content)));
+    this.frontier.push({ type, match: type.contentMatch });
   }
   closeFrontierNode() {
     let open = this.frontier.pop();
@@ -4520,10 +4524,10 @@ function dropFromFragment(fragment, depth, count) {
     return fragment.cutByIndex(count, fragment.childCount);
   return fragment.replaceChild(0, fragment.firstChild.copy(dropFromFragment(fragment.firstChild.content, depth - 1, count)));
 }
-function addToFragment(fragment, depth, content2) {
+function addToFragment(fragment, depth, content) {
   if (depth == 0)
-    return fragment.append(content2);
-  return fragment.replaceChild(fragment.childCount - 1, fragment.lastChild.copy(addToFragment(fragment.lastChild.content, depth - 1, content2)));
+    return fragment.append(content);
+  return fragment.replaceChild(fragment.childCount - 1, fragment.lastChild.copy(addToFragment(fragment.lastChild.content, depth - 1, content)));
 }
 function contentAt(fragment, depth) {
   for (let i = 0; i < depth; i++)
@@ -4543,21 +4547,21 @@ function closeNodeStart(node, openStart, openEnd) {
   }
   return node.copy(frag);
 }
-function contentAfterFits($to, depth, type2, match, open) {
+function contentAfterFits($to, depth, type, match, open) {
   let node = $to.node(depth), index = open ? $to.indexAfter(depth) : $to.index(depth);
-  if (index == node.childCount && !type2.compatibleContent(node.type))
+  if (index == node.childCount && !type.compatibleContent(node.type))
     return null;
   let fit = match.fillBefore(node.content, true, index);
-  return fit && !invalidMarks(type2, node.content, index) ? fit : null;
+  return fit && !invalidMarks(type, node.content, index) ? fit : null;
 }
-function invalidMarks(type2, fragment, start) {
+function invalidMarks(type, fragment, start) {
   for (let i = start; i < fragment.childCount; i++)
-    if (!type2.allowsMarks(fragment.child(i).marks))
+    if (!type.allowsMarks(fragment.child(i).marks))
       return true;
   return false;
 }
-function definesContent(type2) {
-  return type2.spec.defining || type2.spec.definingForContent;
+function definesContent(type) {
+  return type.spec.defining || type.spec.definingForContent;
 }
 function replaceRange(tr, from, to, slice) {
   if (!slice.size)
@@ -4581,12 +4585,12 @@ function replaceRange(tr, from, to, slice) {
   }
   let preferredTargetIndex = targetDepths.indexOf(preferredTarget);
   let leftNodes = [], preferredDepth = slice.openStart;
-  for (let content2 = slice.content, i = 0; ; i++) {
-    let node = content2.firstChild;
+  for (let content = slice.content, i = 0; ; i++) {
+    let node = content.firstChild;
     leftNodes.push(node);
     if (i == slice.openStart)
       break;
-    content2 = node.content;
+    content = node.content;
   }
   for (let d = preferredDepth - 1; d >= 0; d--) {
     let leftNode = leftNodes[d], def = definesContent(leftNode.type);
@@ -4823,8 +4827,8 @@ class Transform {
   Replace the given range with the given content, which may be a
   fragment, node, or array of nodes.
   */
-  replaceWith(from, to, content2) {
-    return this.replace(from, to, new Slice(Fragment.from(content2), 0, 0));
+  replaceWith(from, to, content) {
+    return this.replace(from, to, new Slice(Fragment.from(content), 0, 0));
   }
   /**
   Delete the content between the given positions.
@@ -4835,8 +4839,8 @@ class Transform {
   /**
   Insert the given content at the given position.
   */
-  insert(pos, content2) {
-    return this.replaceWith(pos, pos, content2);
+  insert(pos, content) {
+    return this.replaceWith(pos, pos, content);
   }
   /**
   Replace a range of the document with a given slice, using
@@ -4914,16 +4918,16 @@ class Transform {
   Set the type of all textblocks (partly) between `from` and `to` to
   the given node type with the given attributes.
   */
-  setBlockType(from, to = from, type2, attrs = null) {
-    setBlockType(this, from, to, type2, attrs);
+  setBlockType(from, to = from, type, attrs = null) {
+    setBlockType(this, from, to, type, attrs);
     return this;
   }
   /**
   Change the type, attributes, and/or marks of the node at `pos`.
   When `type` isn't given, the existing node type is preserved,
   */
-  setNodeMarkup(pos, type2, attrs = null, marks) {
-    setNodeMarkup(this, pos, type2, attrs, marks);
+  setNodeMarkup(pos, type, attrs = null, marks) {
+    setNodeMarkup(this, pos, type, attrs, marks);
     return this;
   }
   /**
@@ -5072,16 +5076,16 @@ class Selection {
   Replace the selection with a slice or, if no slice is given,
   delete the selection. Will append to the given transaction.
   */
-  replace(tr, content2 = Slice.empty) {
-    let lastNode = content2.content.lastChild, lastParent = null;
-    for (let i = 0; i < content2.openEnd; i++) {
+  replace(tr, content = Slice.empty) {
+    let lastNode = content.content.lastChild, lastParent = null;
+    for (let i = 0; i < content.openEnd; i++) {
       lastParent = lastNode;
       lastNode = lastNode.lastChild;
     }
     let mapFrom = tr.steps.length, ranges = this.ranges;
     for (let i = 0; i < ranges.length; i++) {
       let { $from, $to } = ranges[i], mapping = tr.mapping.slice(mapFrom);
-      tr.replaceRange(mapping.map($from.pos), mapping.map($to.pos), i ? Slice.empty : content2);
+      tr.replaceRange(mapping.map($from.pos), mapping.map($to.pos), i ? Slice.empty : content);
       if (i == 0)
         selectionToInsertionEnd(tr, mapFrom, (lastNode ? lastNode.isInline : lastParent && lastParent.isTextblock) ? -1 : 1);
     }
@@ -5223,9 +5227,9 @@ class TextSelection extends Selection {
     let $anchor = doc2.resolve(mapping.map(this.anchor));
     return new TextSelection($anchor.parent.inlineContent ? $anchor : $head, $head);
   }
-  replace(tr, content2 = Slice.empty) {
-    super.replace(tr, content2);
-    if (content2 == Slice.empty) {
+  replace(tr, content = Slice.empty) {
+    super.replace(tr, content);
+    if (content == Slice.empty) {
       let marks = this.$from.marksAcross(this.$to);
       if (marks)
         tr.ensureMarks(marks);
@@ -5375,14 +5379,14 @@ class AllSelection extends Selection {
   constructor(doc2) {
     super(doc2.resolve(0), doc2.resolve(doc2.content.size));
   }
-  replace(tr, content2 = Slice.empty) {
-    if (content2 == Slice.empty) {
+  replace(tr, content = Slice.empty) {
+    if (content == Slice.empty) {
       tr.delete(0, tr.doc.content.size);
       let sel = Selection.atStart(tr.doc);
       if (!sel.eq(tr.selection))
         tr.setSelection(sel);
     } else {
-      super.replace(tr, content2);
+      super.replace(tr, content);
     }
   }
   toJSON() {
@@ -8355,17 +8359,17 @@ function serializeForClipboard(view2, slice) {
   view2.someProp("transformCopied", (f) => {
     slice = f(slice, view2);
   });
-  let context = [], { content: content2, openStart, openEnd } = slice;
-  while (openStart > 1 && openEnd > 1 && content2.childCount == 1 && content2.firstChild.childCount == 1) {
+  let context = [], { content, openStart, openEnd } = slice;
+  while (openStart > 1 && openEnd > 1 && content.childCount == 1 && content.firstChild.childCount == 1) {
     openStart--;
     openEnd--;
-    let node = content2.firstChild;
+    let node = content.firstChild;
     context.push(node.type.name, node.attrs != node.type.defaultAttrs ? node.attrs : null);
-    content2 = node.content;
+    content = node.content;
   }
   let serializer = view2.someProp("clipboardSerializer") || DOMSerializer.fromSchema(view2.state.schema);
   let doc2 = detachedDoc(), wrap2 = doc2.createElement("div");
-  wrap2.appendChild(serializer.serializeFragment(content2, { document: doc2 }));
+  wrap2.appendChild(serializer.serializeFragment(content, { document: doc2 }));
   let firstChild = wrap2.firstChild, needsWrap, wrappers = 0;
   while (firstChild && firstChild.nodeType == 1 && (needsWrap = wrapMap[firstChild.nodeName.toLowerCase()])) {
     for (let i = needsWrap.length - 1; i >= 0; i--) {
@@ -8577,16 +8581,16 @@ function addContext(slice, context) {
   } catch (e) {
     return slice;
   }
-  let { content: content2, openStart, openEnd } = slice;
+  let { content, openStart, openEnd } = slice;
   for (let i = array.length - 2; i >= 0; i -= 2) {
-    let type2 = schema2.nodes[array[i]];
-    if (!type2 || type2.hasRequiredAttrs())
+    let type = schema2.nodes[array[i]];
+    if (!type || type.hasRequiredAttrs())
       break;
-    content2 = Fragment.from(type2.create(array[i + 1], content2));
+    content = Fragment.from(type.create(array[i + 1], content));
     openStart++;
     openEnd++;
   }
-  return new Slice(content2, openStart, openEnd);
+  return new Slice(content, openStart, openEnd);
 }
 const handlers = {};
 const editHandlers = {};
@@ -8635,16 +8639,16 @@ function setSelectionOrigin(view2, origin) {
 }
 function destroyInput(view2) {
   view2.domObserver.stop();
-  for (let type2 in view2.input.eventHandlers)
-    view2.dom.removeEventListener(type2, view2.input.eventHandlers[type2]);
+  for (let type in view2.input.eventHandlers)
+    view2.dom.removeEventListener(type, view2.input.eventHandlers[type]);
   clearTimeout(view2.input.composingTimeout);
   clearTimeout(view2.input.lastIOSEnterFallbackTimeout);
 }
 function ensureListeners(view2) {
   view2.someProp("handleDOMEvents", (currentHandlers) => {
-    for (let type2 in currentHandlers)
-      if (!view2.input.eventHandlers[type2])
-        view2.dom.addEventListener(type2, view2.input.eventHandlers[type2] = (event) => runCustomHandler(view2, event));
+    for (let type in currentHandlers)
+      if (!view2.input.eventHandlers[type])
+        view2.dom.addEventListener(type, view2.input.eventHandlers[type] = (event) => runCustomHandler(view2, event));
   });
 }
 function runCustomHandler(view2, event) {
@@ -8816,22 +8820,22 @@ handlers.mousedown = (view2, _event) => {
   let event = _event;
   view2.input.shiftKey = event.shiftKey;
   let flushed = forceDOMFlush(view2);
-  let now = Date.now(), type2 = "singleClick";
+  let now = Date.now(), type = "singleClick";
   if (now - view2.input.lastClick.time < 500 && isNear(event, view2.input.lastClick) && !event[selectNodeModifier]) {
     if (view2.input.lastClick.type == "singleClick")
-      type2 = "doubleClick";
+      type = "doubleClick";
     else if (view2.input.lastClick.type == "doubleClick")
-      type2 = "tripleClick";
+      type = "tripleClick";
   }
-  view2.input.lastClick = { time: now, x: event.clientX, y: event.clientY, type: type2 };
+  view2.input.lastClick = { time: now, x: event.clientX, y: event.clientY, type };
   let pos = view2.posAtCoords(eventCoords(event));
   if (!pos)
     return;
-  if (type2 == "singleClick") {
+  if (type == "singleClick") {
     if (view2.input.mouseDown)
       view2.input.mouseDown.done();
     view2.input.mouseDown = new MouseDown(view2, pos, event, !!flushed);
-  } else if ((type2 == "doubleClick" ? handleDoubleClick : handleTripleClick)(view2, pos.pos, pos.inside, event)) {
+  } else if ((type == "doubleClick" ? handleDoubleClick : handleTripleClick)(view2, pos.pos, pos.inside, event)) {
     event.preventDefault();
   } else {
     setSelectionOrigin(view2, "pointer");
@@ -9370,10 +9374,10 @@ class Decoration {
   /**
   @internal
   */
-  constructor(from, to, type2) {
+  constructor(from, to, type) {
     this.from = from;
     this.to = to;
-    this.type = type2;
+    this.type = type;
   }
   /**
   @internal
@@ -10415,18 +10419,18 @@ function resolveSelection(view2, doc2, parsedSel) {
 }
 function isMarkChange(cur, prev) {
   let curMarks = cur.firstChild.marks, prevMarks = prev.firstChild.marks;
-  let added2 = curMarks, removed = prevMarks, type2, mark, update2;
+  let added2 = curMarks, removed = prevMarks, type, mark, update2;
   for (let i = 0; i < prevMarks.length; i++)
     added2 = prevMarks[i].removeFromSet(added2);
   for (let i = 0; i < curMarks.length; i++)
     removed = curMarks[i].removeFromSet(removed);
   if (added2.length == 1 && removed.length == 0) {
     mark = added2[0];
-    type2 = "add";
+    type = "add";
     update2 = (node) => node.mark(mark.addToSet(node.marks));
   } else if (added2.length == 0 && removed.length == 1) {
     mark = removed[0];
-    type2 = "remove";
+    type = "remove";
     update2 = (node) => node.mark(mark.removeFromSet(node.marks));
   } else {
     return null;
@@ -10435,7 +10439,7 @@ function isMarkChange(cur, prev) {
   for (let i = 0; i < prev.childCount; i++)
     updated.push(update2(prev.child(i)));
   if (Fragment.from(updated).eq(cur))
-    return { mark, type: type2 };
+    return { mark, type };
 }
 function looksLikeBackspace(old, start, end, $newStart, $newEnd) {
   if (
@@ -11187,6 +11191,49 @@ function keydownHandler(bindings) {
     return false;
   };
 }
+function splitListItem(itemType, itemAttrs) {
+  return function(state2, dispatch) {
+    let { $from, $to, node } = state2.selection;
+    if (node && node.isBlock || $from.depth < 2 || !$from.sameParent($to))
+      return false;
+    let grandParent = $from.node(-1);
+    if (grandParent.type != itemType)
+      return false;
+    if ($from.parent.content.size == 0 && $from.node(-1).childCount == $from.indexAfter(-1)) {
+      if ($from.depth == 3 || $from.node(-3).type != itemType || $from.index(-2) != $from.node(-2).childCount - 1)
+        return false;
+      if (dispatch) {
+        let wrap2 = Fragment.empty;
+        let depthBefore = $from.index(-1) ? 1 : $from.index(-2) ? 2 : 3;
+        for (let d = $from.depth - depthBefore; d >= $from.depth - 3; d--)
+          wrap2 = Fragment.from($from.node(d).copy(wrap2));
+        let depthAfter = $from.indexAfter(-1) < $from.node(-2).childCount ? 1 : $from.indexAfter(-2) < $from.node(-3).childCount ? 2 : 3;
+        wrap2 = wrap2.append(Fragment.from(itemType.createAndFill()));
+        let start = $from.before($from.depth - (depthBefore - 1));
+        let tr2 = state2.tr.replace(start, $from.after(-depthAfter), new Slice(wrap2, 4 - depthBefore, 0));
+        let sel = -1;
+        tr2.doc.nodesBetween(start, tr2.doc.content.size, (node2, pos) => {
+          if (sel > -1)
+            return false;
+          if (node2.isTextblock && node2.content.size == 0)
+            sel = pos + 1;
+        });
+        if (sel > -1)
+          tr2.setSelection(Selection.near(tr2.doc.resolve(sel)));
+        dispatch(tr2.scrollIntoView());
+      }
+      return true;
+    }
+    let nextType = $to.pos == $from.end() ? grandParent.contentMatchAt(0).defaultType : null;
+    let tr = state2.tr.delete($from.pos, $to.pos);
+    let types = nextType ? [null, { type: nextType }] : void 0;
+    if (!canSplit(tr.doc, $from.pos, 2, types))
+      return false;
+    if (dispatch)
+      dispatch(tr.split($from.pos, 2, types).scrollIntoView());
+    return true;
+  };
+}
 function style_html(html_source, options) {
   var multi_parser, indent_size, indent_character, max_char, brace_style, unformatted;
   options = options || {};
@@ -11224,51 +11271,51 @@ function style_html(html_source, options) {
       }
     };
     this.get_content = function() {
-      var input_char = "", content2 = [], space2 = false;
+      var input_char = "", content = [], space2 = false;
       while (this.input.charAt(this.pos) !== "<") {
         if (this.pos >= this.input.length) {
-          return content2.length ? content2.join("") : ["", "TK_EOF"];
+          return content.length ? content.join("") : ["", "TK_EOF"];
         }
         input_char = this.input.charAt(this.pos);
         this.pos++;
         this.line_char_count++;
         if (this.Utils.in_array(input_char, this.Utils.whitespace)) {
-          if (content2.length) {
+          if (content.length) {
             space2 = true;
           }
           this.line_char_count--;
           continue;
         } else if (space2) {
           if (this.line_char_count >= this.max_char) {
-            content2.push("\n");
+            content.push("\n");
             for (var i = 0; i < this.indent_level; i++) {
-              content2.push(this.indent_string);
+              content.push(this.indent_string);
             }
             this.line_char_count = 0;
           } else {
-            content2.push(" ");
+            content.push(" ");
             this.line_char_count++;
           }
           space2 = false;
         }
-        content2.push(input_char);
+        content.push(input_char);
       }
-      return content2.length ? content2.join("") : "";
+      return content.length ? content.join("") : "";
     };
     this.get_contents_to = function(name) {
       if (this.pos == this.input.length) {
         return ["", "TK_EOF"];
       }
-      var content2 = "";
+      var content = "";
       var reg_match = new RegExp("</" + name + "\\s*>", "igm");
       reg_match.lastIndex = this.pos;
       var reg_array = reg_match.exec(this.input);
       var end_script = reg_array ? reg_array.index : this.input.length;
       if (this.pos < end_script) {
-        content2 = this.input.substring(this.pos, end_script);
+        content = this.input.substring(this.pos, end_script);
         this.pos = end_script;
       }
-      return content2;
+      return content;
     };
     this.record_tag = function(tag) {
       if (this.tags[tag + "count"]) {
@@ -11304,10 +11351,10 @@ function style_html(html_source, options) {
       }
     };
     this.get_tag = function() {
-      var input_char = "", content2 = [], space2 = false, tag_start, tag_end;
+      var input_char = "", content = [], space2 = false, tag_start, tag_end;
       do {
         if (this.pos >= this.input.length) {
-          return content2.length ? content2.join("") : ["", "TK_EOF"];
+          return content.length ? content.join("") : ["", "TK_EOF"];
         }
         input_char = this.input.charAt(this.pos);
         this.pos++;
@@ -11318,7 +11365,7 @@ function style_html(html_source, options) {
           continue;
         }
         if (input_char === "'" || input_char === '"') {
-          if (!content2[1] || content2[1] !== "!") {
+          if (!content[1] || content[1] !== "!") {
             input_char += this.get_unformatted(input_char);
             space2 = true;
           }
@@ -11326,12 +11373,12 @@ function style_html(html_source, options) {
         if (input_char === "=") {
           space2 = false;
         }
-        if (content2.length && content2[content2.length - 1] !== "=" && input_char !== ">" && space2) {
+        if (content.length && content[content.length - 1] !== "=" && input_char !== ">" && space2) {
           if (this.line_char_count >= this.max_char) {
-            this.print_newline(false, content2);
+            this.print_newline(false, content);
             this.line_char_count = 0;
           } else {
-            content2.push(" ");
+            content.push(" ");
             this.line_char_count++;
           }
           space2 = false;
@@ -11339,9 +11386,9 @@ function style_html(html_source, options) {
         if (input_char === "<") {
           tag_start = this.pos - 1;
         }
-        content2.push(input_char);
+        content.push(input_char);
       } while (input_char !== ">");
-      var tag_complete = content2.join("");
+      var tag_complete = content.join("");
       var tag_index;
       if (tag_complete.indexOf(" ") != -1) {
         tag_index = tag_complete.indexOf(" ");
@@ -11359,20 +11406,20 @@ function style_html(html_source, options) {
         this.tag_type = "STYLE";
       } else if (this.Utils.in_array(tag_check2, unformatted)) {
         var comment = this.get_unformatted("</" + tag_check2 + ">", tag_complete);
-        content2.push(comment);
+        content.push(comment);
         if (tag_start > 0 && this.Utils.in_array(this.input.charAt(tag_start - 1), this.Utils.whitespace)) {
-          content2.splice(0, 0, this.input.charAt(tag_start - 1));
+          content.splice(0, 0, this.input.charAt(tag_start - 1));
         }
         tag_end = this.pos - 1;
         if (this.Utils.in_array(this.input.charAt(tag_end + 1), this.Utils.whitespace)) {
-          content2.push(this.input.charAt(tag_end + 1));
+          content.push(this.input.charAt(tag_end + 1));
         }
         this.tag_type = "SINGLE";
       } else if (tag_check2.charAt(0) === "!") {
         if (tag_check2.indexOf("[if") != -1) {
           if (tag_complete.indexOf("!IE") != -1) {
             var comment = this.get_unformatted("-->", tag_complete);
-            content2.push(comment);
+            content.push(comment);
           }
           this.tag_type = "START";
         } else if (tag_check2.indexOf("[endif") != -1) {
@@ -11380,11 +11427,11 @@ function style_html(html_source, options) {
           this.unindent();
         } else if (tag_check2.indexOf("[cdata[") != -1) {
           var comment = this.get_unformatted("]]>", tag_complete);
-          content2.push(comment);
+          content.push(comment);
           this.tag_type = "SINGLE";
         } else {
           var comment = this.get_unformatted("-->", tag_complete);
-          content2.push(comment);
+          content.push(comment);
           this.tag_type = "SINGLE";
         }
       } else {
@@ -11399,18 +11446,18 @@ function style_html(html_source, options) {
           this.print_newline(true, this.output);
         }
       }
-      return content2.join("");
+      return content.join("");
     };
     this.get_unformatted = function(delimiter, orig_tag) {
       if (orig_tag && orig_tag.toLowerCase().indexOf(delimiter) != -1) {
         return "";
       }
       var input_char = "";
-      var content2 = "";
+      var content = "";
       var space2 = true;
       do {
         if (this.pos >= this.input.length) {
-          return content2;
+          return content;
         }
         input_char = this.input.charAt(this.pos);
         this.pos++;
@@ -11420,26 +11467,26 @@ function style_html(html_source, options) {
             continue;
           }
           if (input_char === "\n" || input_char === "\r") {
-            content2 += "\n";
+            content += "\n";
             this.line_char_count = 0;
             continue;
           }
         }
-        content2 += input_char;
+        content += input_char;
         this.line_char_count++;
         space2 = true;
-      } while (content2.toLowerCase().indexOf(delimiter) == -1);
-      return content2;
+      } while (content.toLowerCase().indexOf(delimiter) == -1);
+      return content;
     };
     this.get_token = function() {
       var token;
       if (this.last_token === "TK_TAG_SCRIPT" || this.last_token === "TK_TAG_STYLE") {
-        var type2 = this.last_token.substr(7);
-        token = this.get_contents_to(type2);
+        var type = this.last_token.substr(7);
+        token = this.get_contents_to(type);
         if (typeof token !== "string") {
           return token;
         }
-        return [token, "TK_" + type2];
+        return [token, "TK_" + type];
       }
       if (this.current_mode === "CONTENT") {
         token = this.get_content();
@@ -11807,12 +11854,12 @@ function set_style(node, key, value, important) {
 function toggle_class(element2, name, toggle) {
   element2.classList.toggle(name, !!toggle);
 }
-function custom_event(type2, detail) {
+function custom_event(type, detail) {
   let {
     bubbles = false,
     cancelable = false
   } = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
-  return new CustomEvent(type2, {
+  return new CustomEvent(type, {
     detail,
     bubbles,
     cancelable
@@ -11837,15 +11884,15 @@ function onDestroy(fn) {
 }
 function createEventDispatcher() {
   const component = get_current_component();
-  return function(type2, detail) {
+  return function(type, detail) {
     let {
       cancelable = false
     } = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {};
-    const callbacks = component.$$.callbacks[type2];
+    const callbacks = component.$$.callbacks[type];
     if (callbacks) {
       const event = custom_event(
         /** @type {string} */
-        type2,
+        type,
         detail,
         {
           cancelable
@@ -12162,11 +12209,11 @@ class SvelteComponent {
    * @param {((e: Events[K]) => void) | null | undefined} callback
    * @returns {() => void}
    */
-  $on(type2, callback) {
+  $on(type, callback) {
     if (!is_function(callback)) {
       return noop;
     }
-    const callbacks = this.$$.callbacks[type2] || (this.$$.callbacks[type2] = []);
+    const callbacks = this.$$.callbacks[type] || (this.$$.callbacks[type] = []);
     callbacks.push(callback);
     return () => {
       const index = callbacks.indexOf(callback);
@@ -15637,16 +15684,16 @@ var BaseFormatter = function() {
       if (typeof delta === "undefined" && typeof key === "undefined") {
         return void 0;
       }
-      var type2 = this.getDeltaType(delta, movedFrom);
-      var nodeType = type2 === "node" ? delta._t === "a" ? "array" : "object" : "";
+      var type = this.getDeltaType(delta, movedFrom);
+      var nodeType = type === "node" ? delta._t === "a" ? "array" : "object" : "";
       if (typeof key !== "undefined") {
-        this.nodeBegin(context, key, leftKey, type2, nodeType, isLast);
+        this.nodeBegin(context, key, leftKey, type, nodeType, isLast);
       } else {
-        this.rootBegin(context, type2, nodeType);
+        this.rootBegin(context, type, nodeType);
       }
       var typeFormattter = void 0;
       try {
-        typeFormattter = this["format_" + type2] || this.typeFormattterNotFound(context, type2);
+        typeFormattter = this["format_" + type] || this.typeFormattterNotFound(context, type);
         typeFormattter.call(this, context, delta, leftValue, key, leftKey, movedFrom);
       } catch (err) {
         this.typeFormattterErrorFormatter(context, err, delta, leftValue, key, leftKey, movedFrom);
@@ -15655,9 +15702,9 @@ var BaseFormatter = function() {
         }
       }
       if (typeof key !== "undefined") {
-        this.nodeEnd(context, key, leftKey, type2, nodeType, isLast);
+        this.nodeEnd(context, key, leftKey, type, nodeType, isLast);
       } else {
-        this.rootEnd(context, type2, nodeType);
+        this.rootEnd(context, type, nodeType);
       }
     }
   }, {
@@ -15819,8 +15866,8 @@ var BaseFormatter = function() {
     }
   }, {
     key: "rootBegin",
-    value: function rootBegin(context, type2, nodeType) {
-      var nodeClass = "jsondiffpatch-" + type2 + (nodeType ? " jsondiffpatch-child-node-type-" + nodeType : "");
+    value: function rootBegin(context, type, nodeType) {
+      var nodeClass = "jsondiffpatch-" + type + (nodeType ? " jsondiffpatch-child-node-type-" + nodeType : "");
       context.out('<div class="jsondiffpatch-delta ' + nodeClass + '">');
     }
   }, {
@@ -15830,8 +15877,8 @@ var BaseFormatter = function() {
     }
   }, {
     key: "nodeBegin",
-    value: function nodeBegin(context, key, leftKey, type2, nodeType) {
-      var nodeClass = "jsondiffpatch-" + type2 + (nodeType ? " jsondiffpatch-child-node-type-" + nodeType : "");
+    value: function nodeBegin(context, key, leftKey, type, nodeType) {
+      var nodeClass = "jsondiffpatch-" + type + (nodeType ? " jsondiffpatch-child-node-type-" + nodeType : "");
       context.out('<li class="' + nodeClass + '" data-key="' + leftKey + '">' + ('<div class="jsondiffpatch-property-name">' + leftKey + "</div>"));
     }
   }, {
@@ -16018,9 +16065,9 @@ var AnnotatedFormatter = function(_BaseFormatter) {
     }
   }, {
     key: "rootBegin",
-    value: function rootBegin(context, type2, nodeType) {
+    value: function rootBegin(context, type, nodeType) {
       context.out('<table class="jsondiffpatch-annotated-delta">');
-      if (type2 === "node") {
+      if (type === "node") {
         context.row("{");
         context.indent();
       }
@@ -16030,8 +16077,8 @@ var AnnotatedFormatter = function(_BaseFormatter) {
     }
   }, {
     key: "rootEnd",
-    value: function rootEnd(context, type2) {
-      if (type2 === "node") {
+    value: function rootEnd(context, type) {
+      if (type === "node") {
         context.indent(-1);
         context.row("}");
       }
@@ -16039,9 +16086,9 @@ var AnnotatedFormatter = function(_BaseFormatter) {
     }
   }, {
     key: "nodeBegin",
-    value: function nodeBegin(context, key, leftKey, type2, nodeType) {
+    value: function nodeBegin(context, key, leftKey, type, nodeType) {
       context.row("&quot;" + key + "&quot;: {");
-      if (type2 === "node") {
+      if (type === "node") {
         context.indent();
       }
       if (nodeType === "array") {
@@ -16050,8 +16097,8 @@ var AnnotatedFormatter = function(_BaseFormatter) {
     }
   }, {
     key: "nodeEnd",
-    value: function nodeEnd(context, key, leftKey, type2, nodeType, isLast) {
-      if (type2 === "node") {
+    value: function nodeEnd(context, key, leftKey, type, nodeType, isLast) {
+      if (type === "node") {
         context.indent(-1);
       }
       context.row("}" + (isLast ? "" : ","));
@@ -16362,17 +16409,17 @@ var colors = {
     }
   }, {
     key: "rootBegin",
-    value: function rootBegin(context, type2, nodeType) {
-      context.pushColor(colors[type2]);
-      if (type2 === "node") {
+    value: function rootBegin(context, type, nodeType) {
+      context.pushColor(colors[type]);
+      if (type === "node") {
         context.out(nodeType === "array" ? "[" : "{");
         context.indent();
       }
     }
   }, {
     key: "rootEnd",
-    value: function rootEnd(context, type2, nodeType) {
-      if (type2 === "node") {
+    value: function rootEnd(context, type, nodeType) {
+      if (type === "node") {
         context.indent(-1);
         context.out(nodeType === "array" ? "]" : "}");
       }
@@ -16380,18 +16427,18 @@ var colors = {
     }
   }, {
     key: "nodeBegin",
-    value: function nodeBegin(context, key, leftKey, type2, nodeType) {
-      context.pushColor(colors[type2]);
+    value: function nodeBegin(context, key, leftKey, type, nodeType) {
+      context.pushColor(colors[type]);
       context.out(leftKey + ": ");
-      if (type2 === "node") {
+      if (type === "node") {
         context.out(nodeType === "array" ? "[" : "{");
         context.indent();
       }
     }
   }, {
     key: "nodeEnd",
-    value: function nodeEnd(context, key, leftKey, type2, nodeType, isLast) {
-      if (type2 === "node") {
+    value: function nodeEnd(context, key, leftKey, type, nodeType, isLast) {
+      if (type === "node") {
         context.indent(-1);
         context.out(nodeType === "array" ? "]" : "}" + (isLast ? "" : ","));
       }
@@ -16646,8 +16693,8 @@ function getValueType(value) {
     return typeof value;
   }
 }
-function getChildren(value, type2) {
-  switch (type2) {
+function getChildren(value, type) {
+  switch (type) {
     case "array":
       return value.map((v, i) => [i.toString(), v]);
     case "map":
@@ -18685,20 +18732,20 @@ class StateTab extends SvelteComponent {
     init(this, options, instance$d, create_fragment$d, safe_not_equal, {}, add_css$d);
   }
 }
-function mapSelectionDeltaChildren(_val, type2, _parent) {
-  if (type2 !== "array")
+function mapSelectionDeltaChildren(_val, type, _parent) {
+  if (type !== "array")
     return;
   return [];
 }
-function mapDocDeltaChildren(delta, type2) {
-  if (type2 === "array" && delta[1] === 0 && delta[2] === 0) {
+function mapDocDeltaChildren(delta, type) {
+  if (type === "array" && delta[1] === 0 && delta[2] === 0) {
     return [];
-  } else if (type2 === "array" && typeof delta[0] === "string" && delta[1] === 0 && delta[2] === 2) {
+  } else if (type === "array" && typeof delta[0] === "string" && delta[1] === 0 && delta[2] === 2) {
     return [];
-  } else if (type2 === "array" && delta.length === 1 && typeof delta[0] === "object") {
+  } else if (type === "array" && delta.length === 1 && typeof delta[0] === "object") {
     return [];
   }
-  if (type2 !== "object" || delta._t !== "a")
+  if (type !== "object" || delta._t !== "a")
     return;
   const transformed = [];
   for (const key in delta) {
@@ -19722,9 +19769,9 @@ function replaceSpacesWithNonBreakingSpace(str) {
 function parseTextDiff(textDiff) {
   const diffByLines = textDiff.split(/\n/gm).slice(1);
   return diffByLines.map((line) => {
-    const type2 = line.startsWith("-") ? "delete" : line.startsWith("+") ? "add" : "raw";
+    const type = line.startsWith("-") ? "delete" : line.startsWith("+") ? "add" : "raw";
     return {
-      [type2]: replaceSpacesWithNonBreakingSpace(line.slice(1))
+      [type]: replaceSpacesWithNonBreakingSpace(line.slice(1))
     };
   });
 }
@@ -24298,6 +24345,50 @@ function removeDevTools() {
   removeCallback && removeCallback();
   removeCallback = void 0;
 }
+const defaultDoc = {
+  type: "doc",
+  content: [
+    {
+      type: "bullet_list",
+      content: [
+        {
+          type: "list_item",
+          content: [
+            {
+              type: "paragraph",
+              attrs: {
+                id: "id1"
+              },
+              content: [
+                {
+                  type: "text",
+                  text: "one"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type: "list_item",
+          content: [
+            {
+              type: "paragraph",
+              attrs: {
+                id: "id2"
+              },
+              content: [
+                {
+                  type: "text",
+                  text: "two"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
 const schema = new Schema({
   nodes: {
     doc: {
@@ -24343,158 +24434,12 @@ const schema = new Schema({
     }
   }
 });
-function getNodeType(nameOrType, schema2) {
-  if (typeof nameOrType === "string") {
-    if (!schema2.nodes[nameOrType]) {
-      throw Error(
-        `There is no node type named '${nameOrType}'. Maybe you forgot to add the extension?`
-      );
-    }
-    return schema2.nodes[nameOrType];
-  }
-  return nameOrType;
-}
-function getSplittedAttributes(extensionAttributes, typeName, attributes) {
-  return Object.fromEntries(
-    Object.entries(attributes).filter(([name]) => {
-      const extensionAttribute = extensionAttributes.find((item) => {
-        return item.type === typeName && item.name === name;
-      });
-      if (!extensionAttribute) {
-        return false;
-      }
-      return extensionAttribute.attribute.keepOnSplit;
-    })
-  );
-}
-const splitListItem = (typeOrName, overrideAttrs = {}) => (state2, dispatch, view2) => {
-  var _a;
-  const type2 = getNodeType(typeOrName, state2.schema);
-  const { $from, $to } = state2.selection;
-  const node = state2.selection.node;
-  if (node && node.isBlock || $from.depth < 2 || !$from.sameParent($to)) {
-    return false;
-  }
-  const grandParent = $from.node(-1);
-  if (grandParent.type !== type2) {
-    return false;
-  }
-  const extensionAttributes = [];
-  const tr = state2.tr;
-  if ($from.parent.content.size === 0 && $from.node(-1).childCount === $from.indexAfter(-1)) {
-    if ($from.depth === 2 || $from.node(-3).type !== type2 || $from.index(-2) !== $from.node(-2).childCount - 1) {
-      return false;
-    }
-    if (dispatch) {
-      let wrap2 = Fragment.empty;
-      const depthBefore = $from.index(-1) ? 1 : $from.index(-2) ? 2 : 3;
-      for (let d = $from.depth - depthBefore; d >= $from.depth - 3; d -= 1) {
-        wrap2 = Fragment.from($from.node(d).copy(wrap2));
-      }
-      const depthAfter = $from.indexAfter(-1) < $from.node(-2).childCount ? 1 : $from.indexAfter(-2) < $from.node(-3).childCount ? 2 : 3;
-      const newNextTypeAttributes2 = {
-        ...getSplittedAttributes(extensionAttributes, $from.node().type.name, $from.node().attrs),
-        ...overrideAttrs
-      };
-      const nextType2 = ((_a = type2.contentMatch.defaultType) == null ? void 0 : _a.createAndFill(newNextTypeAttributes2)) || void 0;
-      wrap2 = wrap2.append(Fragment.from(type2.createAndFill(null, nextType2) || void 0));
-      const start = $from.before($from.depth - (depthBefore - 1));
-      tr.replace(start, $from.after(-depthAfter), new Slice(wrap2, 4 - depthBefore, 0));
-      let sel = -1;
-      tr.doc.nodesBetween(start, tr.doc.content.size, (n, pos) => {
-        if (sel > -1) {
-          return false;
-        }
-        if (n.isTextblock && n.content.size === 0) {
-          sel = pos + 1;
-        }
-      });
-      if (sel > -1) {
-        tr.setSelection(TextSelection.near(tr.doc.resolve(sel)));
-      }
-      tr.scrollIntoView();
-    }
-    dispatch && dispatch(tr);
-    return true;
-  }
-  const nextType = $to.pos === $from.end() ? grandParent.contentMatchAt(0).defaultType : null;
-  const newTypeAttributes = {
-    ...getSplittedAttributes(extensionAttributes, grandParent.type.name, grandParent.attrs),
-    ...overrideAttrs
-  };
-  const newNextTypeAttributes = {
-    ...getSplittedAttributes(extensionAttributes, $from.node().type.name, $from.node().attrs),
-    ...overrideAttrs
-  };
-  tr.delete($from.pos, $to.pos);
-  const types = nextType ? [
-    { type: type2, attrs: newTypeAttributes },
-    { type: nextType, attrs: newNextTypeAttributes }
-  ] : [{ type: type2, attrs: newTypeAttributes }];
-  if (!canSplit(tr.doc, $from.pos, 2)) {
-    return false;
-  }
-  if (dispatch) {
-    tr.split($from.pos, 2, types).scrollIntoView();
-  }
-  dispatch && dispatch(tr);
-  return true;
-};
-const type = "doc";
-const content = [
-  {
-    type: "bullet_list",
-    content: [
-      {
-        type: "list_item",
-        content: [
-          {
-            type: "paragraph",
-            attrs: {
-              id: "id1"
-            },
-            content: [
-              {
-                type: "text",
-                text: "item1"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        type: "list_item",
-        content: [
-          {
-            type: "paragraph",
-            attrs: {
-              id: "id2"
-            },
-            content: [
-              {
-                type: "text",
-                text: "item2"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-];
-const defaultDoc = {
-  type,
-  content
-};
 const state = EditorState.create({
   schema,
   plugins: [keymap({ Enter: splitListItem(schema.nodes.list_item) })],
   doc: schema.nodeFromJSON(defaultDoc)
 });
 const view = new EditorView(document.querySelector("#editor"), {
-  state,
-  nodeViews: {
-    // paragraph: (n, v) => new ParagraphView(n, v)
-  }
+  state
 });
-applyDevTools(view, { devToolsExpanded: true });
+applyDevTools(view);
