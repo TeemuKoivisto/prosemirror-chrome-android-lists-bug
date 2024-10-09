@@ -2,18 +2,6 @@
   "type": "doc",
   "content": [
     {
-      "type": "paragraph",
-      "attrs": {
-        "id": "id0"
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "hey"
-        }
-      ]
-    },
-    {
       "type": "bullet_list",
       "content": [
         {

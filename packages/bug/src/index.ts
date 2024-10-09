@@ -1,13 +1,13 @@
 import { EditorState } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
 import { keymap } from 'prosemirror-keymap'
-import { wrapInList, splitListItem, liftListItem, sinkListItem } from 'prosemirror-schema-list'
+import { splitListItem } from 'prosemirror-schema-list'
 import { applyDevTools } from 'prosemirror-dev-toolkit'
 
 import { IdPlugin } from './IdPlugin'
 import { ParagraphView } from './ParagraphView'
 import { schema } from './schema'
-// import { splitListItem } from './splitListItem'
+
 import defaultDoc from './default-pm-doc.json'
 
 const state = EditorState.create({

@@ -21,21 +21,7 @@ export class ParagraphView implements NodeView {
     this.contentDOM = contentDOM
     const dom = document.createElement(this.node.type.spec.inline ? 'span' : 'div')
     dom.classList.add('block')
-    dom.appendChild(this.createGutter())
-    if (contentDOM) {
-      dom.appendChild(contentDOM)
-    }
-    dom.appendChild(this.createGutter())
+    contentDOM && dom.appendChild(contentDOM)
     this.dom = dom
-  }
-
-  createGutter(): HTMLElement {
-    const gutter = document.createElement('div')
-    gutter.setAttribute('contenteditable', 'false')
-    gutter.classList.add('gutter')
-    const child = document.createElement('div')
-    child.classList.add('child')
-    gutter.appendChild(child)
-    return gutter
   }
 }
