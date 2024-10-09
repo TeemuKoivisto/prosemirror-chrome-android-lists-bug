@@ -27,11 +27,6 @@ header {
   display: none;
   visibility: hidden;
 }
-.block {
-  /* display: grid causes the custom NodeView selection to bug out, works in Firefox... */
-  display: grid;
-  grid-template-columns: 128px auto 128px;
-}
 p {
   margin: 1rem 0 0 0;
 }

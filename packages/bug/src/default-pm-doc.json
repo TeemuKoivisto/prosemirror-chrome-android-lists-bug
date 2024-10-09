@@ -3,7 +3,54 @@
   "content": [
     {
       "type": "paragraph",
-      "content": []
+      "attrs": {
+        "id": "id0"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "hey"
+        }
+      ]
+    },
+    {
+      "type": "bullet_list",
+      "content": [
+        {
+          "type": "list_item",
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "id": "id1"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "item1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "list_item",
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "id": "id2"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "item2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["svelte3", "@typescript-eslint", "eslint-plugin-import", "eslint-plugin-prettier"],
+  "plugins": ["@typescript-eslint", "eslint-plugin-import", "eslint-plugin-prettier"],
   "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
   "env": {
     "es6": true,
@@ -11,15 +11,7 @@
   "parserOptions": {
     "sourceType": "module"
   },
-  "overrides": [
-    {
-      "files": ["*.svelte"],
-      "processor": "svelte3/svelte3"
-    }
-  ],
-  "settings": {
-    "svelte3/typescript": true
-  },
+  "overrides": [],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/explicit-member-accessibility": 0,
