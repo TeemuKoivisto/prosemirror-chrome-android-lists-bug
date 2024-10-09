@@ -1,24 +1,19 @@
-import { DOMSerializer, Node as PMNode, Schema } from 'prosemirror-model'
-
-// const mySchema = new Schema({
-//   nodes: addListNodes(baseSchema.spec.nodes, "paragraph block*", "block"),
-//   marks: baseSchema.spec.marks
-// })
+import { Schema } from 'prosemirror-model'
 
 export const schema = new Schema({
   nodes: {
     doc: {
       content: 'block+'
     },
-    bulletList: {
+    bullet_list: {
       group: 'block',
-      content: 'listItem+',
+      content: 'list_item+',
       parseDOM: [{ tag: 'ul' }],
       toDOM() {
         return ['ul', 0]
       }
     },
-    listItem: {
+    list_item: {
       content: 'paragraph+',
       parseDOM: [{ tag: 'li' }],
       toDOM() {
@@ -30,7 +25,17 @@ export const schema = new Schema({
       group: 'block',
       selectable: false,
       attrs: { id: { default: null } },
-      parseDOM: [{ tag: 'p' }],
+      parseDOM: [
+        {
+          tag: 'p',
+          getAttrs: (dom: HTMLElement | string) => {
+            if (dom instanceof HTMLElement) {
+              return { id: dom.getAttribute('id') }
+            }
+            return null
+          }
+        }
+      ],
       toDOM(n) {
         return ['p', { id: n.attrs.id || '' }, 0]
       }

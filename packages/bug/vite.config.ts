@@ -1,14 +1,12 @@
-import path from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  server: {
+    port: 3300,
+    strictPort: true
+  },
   build: {
     outDir: 'dist',
-    rollupOptions: {
-      input: {
-        index: path.resolve('./index.html')
-      }
-    },
     minify: false
   }
 })
