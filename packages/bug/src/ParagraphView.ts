@@ -21,7 +21,29 @@ export class ParagraphView implements NodeView {
     this.contentDOM = contentDOM
     const dom = document.createElement(this.node.type.spec.inline ? 'span' : 'div')
     dom.classList.add('block')
-    contentDOM && dom.appendChild(contentDOM)
+    if (contentDOM) {
+      const contentWrapper = document.createElement('div')
+      contentWrapper.appendChild(contentDOM)
+      dom.appendChild(contentWrapper)
+    }
+    const divBehindContent = document.createElement('div')
+    divBehindContent.setAttribute('contenteditable', 'false')
+    dom.appendChild(divBehindContent)
     this.dom = dom
+  }
+
+  ignoreMutation = (mutation: MutationRecord) => {
+    if (!this.dom || !this.contentDOM || this.node.isLeaf || this.node.isAtom) {
+      return true
+    } else if (this.contentDOM === mutation.target && mutation.type === 'attributes') {
+      return true
+    }
+    return !this.contentDOM.contains(mutation.target)
+  }
+
+  destroy() {
+    while (this.dom.firstChild) {
+      this.dom.removeChild(this.dom.firstChild)
+    }
   }
 }

@@ -1,0 +1,163 @@
+import { Fragment, Node as ProseMirrorNode, NodeType, Slice, Schema } from 'prosemirror-model'
+import { Command, TextSelection } from 'prosemirror-state'
+import { canSplit } from 'prosemirror-transform'
+
+interface ExtensionAttribute {
+  type: string
+  name: string
+  attribute: Required<any>
+}
+
+function getNodeType(nameOrType: string | NodeType, schema: Schema): NodeType {
+  if (typeof nameOrType === 'string') {
+    if (!schema.nodes[nameOrType]) {
+      throw Error(
+        `There is no node type named '${nameOrType}'. Maybe you forgot to add the extension?`
+      )
+    }
+    return schema.nodes[nameOrType]
+  }
+  return nameOrType
+}
+
+/**
+ * Return attributes of an extension that should be splitted by keepOnSplit flag
+ * @param extensionAttributes Array of extension attributes
+ * @param typeName The type of the extension
+ * @param attributes The attributes of the extension
+ * @returns The splitted attributes
+ */
+function getSplittedAttributes(
+  extensionAttributes: ExtensionAttribute[],
+  typeName: string,
+  attributes: Record<string, any>
+): Record<string, any> {
+  return Object.fromEntries(
+    Object.entries(attributes).filter(([name]) => {
+      const extensionAttribute = extensionAttributes.find(item => {
+        return item.type === typeName && item.name === name
+      })
+      if (!extensionAttribute) {
+        return false
+      }
+      return extensionAttribute.attribute.keepOnSplit
+    })
+  )
+}
+
+export const splitListItem =
+  (typeOrName: NodeType | string, overrideAttrs = {}): Command =>
+  (state, dispatch, view) => {
+    const type = getNodeType(typeOrName, state.schema)
+    const { $from, $to } = state.selection
+    // @ts-ignore
+    // eslint-disable-next-line
+    const node: ProseMirrorNode = state.selection.node
+    if ((node && node.isBlock) || $from.depth < 2 || !$from.sameParent($to)) {
+      return false
+    }
+
+    const grandParent = $from.node(-1)
+    if (grandParent.type !== type) {
+      return false
+    }
+
+    const extensionAttributes = [] as ExtensionAttribute[] // editor.extensionManager.attributes
+    const tr = state.tr
+    if ($from.parent.content.size === 0 && $from.node(-1).childCount === $from.indexAfter(-1)) {
+      // In an empty block. If this is a nested list, the wrapping
+      // list item should be split. Otherwise, bail out and let next
+      // command handle lifting.
+      if (
+        $from.depth === 2 ||
+        $from.node(-3).type !== type ||
+        $from.index(-2) !== $from.node(-2).childCount - 1
+      ) {
+        return false
+      }
+
+      if (dispatch) {
+        let wrap = Fragment.empty
+        // eslint-disable-next-line
+        const depthBefore = $from.index(-1) ? 1 : $from.index(-2) ? 2 : 3
+
+        // Build a fragment containing empty versions of the structure
+        // from the outer list item to the parent node of the cursor
+        for (let d = $from.depth - depthBefore; d >= $from.depth - 3; d -= 1) {
+          wrap = Fragment.from($from.node(d).copy(wrap))
+        }
+
+        // eslint-disable-next-line
+        const depthAfter =
+          $from.indexAfter(-1) < $from.node(-2).childCount
+            ? 1
+            : $from.indexAfter(-2) < $from.node(-3).childCount
+              ? 2
+              : 3
+
+        // Add a second list item with an empty default start node
+        const newNextTypeAttributes = {
+          ...getSplittedAttributes(extensionAttributes, $from.node().type.name, $from.node().attrs),
+          ...overrideAttrs
+        }
+        const nextType =
+          type.contentMatch.defaultType?.createAndFill(newNextTypeAttributes) || undefined
+
+        wrap = wrap.append(Fragment.from(type.createAndFill(null, nextType) || undefined))
+
+        const start = $from.before($from.depth - (depthBefore - 1))
+
+        tr.replace(start, $from.after(-depthAfter), new Slice(wrap, 4 - depthBefore, 0))
+
+        let sel = -1
+
+        tr.doc.nodesBetween(start, tr.doc.content.size, (n, pos) => {
+          if (sel > -1) {
+            return false
+          }
+
+          if (n.isTextblock && n.content.size === 0) {
+            sel = pos + 1
+          }
+        })
+
+        if (sel > -1) {
+          tr.setSelection(TextSelection.near(tr.doc.resolve(sel)))
+        }
+
+        tr.scrollIntoView()
+      }
+      dispatch && dispatch(tr)
+      return true
+    }
+
+    const nextType = $to.pos === $from.end() ? grandParent.contentMatchAt(0).defaultType : null
+
+    const newTypeAttributes = {
+      ...getSplittedAttributes(extensionAttributes, grandParent.type.name, grandParent.attrs),
+      ...overrideAttrs
+    }
+    const newNextTypeAttributes = {
+      ...getSplittedAttributes(extensionAttributes, $from.node().type.name, $from.node().attrs),
+      ...overrideAttrs
+    }
+
+    tr.delete($from.pos, $to.pos)
+
+    const types = nextType
+      ? [
+          { type, attrs: newTypeAttributes },
+          { type: nextType, attrs: newNextTypeAttributes }
+        ]
+      : [{ type, attrs: newTypeAttributes }]
+
+    if (!canSplit(tr.doc, $from.pos, 2)) {
+      return false
+    }
+
+    if (dispatch) {
+      tr.split($from.pos, 2, types).scrollIntoView()
+    }
+    dispatch && dispatch(tr)
+    return true
+  }
