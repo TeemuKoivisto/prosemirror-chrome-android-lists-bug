@@ -1,0 +1,44 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "bulletList",
+      "content": [
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "id": "id1"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "item1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "listItem",
+          "content": [
+            {
+              "type": "paragraph",
+              "attrs": {
+                "id": "id2"
+              },
+              "content": [
+                {
+                  "type": "text",
+                  "text": "item2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
