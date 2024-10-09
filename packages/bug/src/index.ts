@@ -1,26 +1,109 @@
+import { Schema } from 'prosemirror-model'
 import { EditorState } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
 import { keymap } from 'prosemirror-keymap'
-// import { splitListItem } from 'prosemirror-schema-list'
+import { splitListItem } from 'prosemirror-schema-list'
 import { applyDevTools } from 'prosemirror-dev-toolkit'
 
-import { IdPlugin } from './IdPlugin'
-import { ParagraphView } from './ParagraphView'
-import { schema } from './schema'
-// import { splitListItem } from './splitListItemOrig'
-import { splitListItem } from './splitListItemTiptap'
+const defaultDoc = {
+  type: 'doc',
+  content: [
+    {
+      type: 'bullet_list',
+      content: [
+        {
+          type: 'list_item',
+          content: [
+            {
+              type: 'paragraph',
+              attrs: {
+                id: 'id1'
+              },
+              content: [
+                {
+                  type: 'text',
+                  text: 'one'
+                }
+              ]
+            }
+          ]
+        },
+        {
+          type: 'list_item',
+          content: [
+            {
+              type: 'paragraph',
+              attrs: {
+                id: 'id2'
+              },
+              content: [
+                {
+                  type: 'text',
+                  text: 'two'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
 
-import defaultDoc from './default-pm-doc.json'
+const schema = new Schema({
+  nodes: {
+    doc: {
+      content: 'block+'
+    },
+    bullet_list: {
+      group: 'block',
+      content: 'list_item+',
+      parseDOM: [{ tag: 'ul' }],
+      toDOM() {
+        return ['ul', 0]
+      }
+    },
+    list_item: {
+      content: 'paragraph+',
+      parseDOM: [{ tag: 'li' }],
+      toDOM() {
+        return ['li', 0]
+      }
+    },
+    paragraph: {
+      content: 'inline*',
+      group: 'block',
+      selectable: false,
+      attrs: { id: { default: null } },
+      parseDOM: [
+        {
+          tag: 'p',
+          getAttrs: (dom: HTMLElement | string) => {
+            if (dom instanceof HTMLElement) {
+              return { id: dom.getAttribute('id') }
+            }
+            return null
+          }
+        }
+      ],
+      toDOM(n) {
+        return ['p', { id: n.attrs.id || '' }, 0]
+      }
+    },
+    text: {
+      group: 'inline'
+    }
+  }
+})
 
 const state = EditorState.create({
   schema,
   plugins: [keymap({ Enter: splitListItem(schema.nodes.list_item) })],
   doc: schema.nodeFromJSON(defaultDoc)
 })
+
 const view = new EditorView(document.querySelector('#editor') as HTMLElement, {
-  state,
-  nodeViews: {
-    paragraph: (n, v) => new ParagraphView(n, v)
-  }
+  state
 })
-applyDevTools(view, { devToolsExpanded: true })
+
+applyDevTools(view)

@@ -1,18 +1,22 @@
 {
-  "name": "bug",
+  "name": "nodeview",
   "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build --base=/prosemirror-chrome-android-lists-bug",
+    "build": "vite build",
     "watch": "rimraf dist && vite build --watch"
   },
   "dependencies": {
+    "prosemirror-commands": "^1.6.0",
     "prosemirror-dev-toolkit": "^1.1.8",
+    "prosemirror-example-setup": "^1.2.3",
     "prosemirror-keymap": "^1.2.2",
     "prosemirror-model": "^1.23.0",
+    "prosemirror-schema-basic": "^1.2.3",
     "prosemirror-schema-list": "^1.4.1",
     "prosemirror-state": "^1.4.3",
+    "prosemirror-transform": "^1.10.0",
     "prosemirror-view": "^1.34.3"
   },
   "devDependencies": {
