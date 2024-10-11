@@ -6,6 +6,7 @@
     "pretty": "prettier --write \"**/*.+(js|cjs|mjs|jsx|json|html|css|less|scss|ts|tsx|svelte|yml|yaml|md|graphql|mdx)\" .",
     "lint": "eslint --ignore-path .gitignore --fix --ext .js,.cjs,.ts,.tsx,.svelte,.css,.scss,.html .",
     "bug": "pnpm --filter bug dev",
+    "nodeview": "pnpm --filter nodeview dev",
     "tiptap": "pnpm --filter tiptap dev",
     "gh": "pnpm --filter bug build && gh-pages -d ./packages/bug/dist"
   },

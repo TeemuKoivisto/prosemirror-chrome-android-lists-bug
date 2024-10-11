@@ -8,6 +8,7 @@
     "watch": "rimraf dist && vite build --watch"
   },
   "dependencies": {
+    "prosemirror-commands": "^1.6.0",
     "prosemirror-dev-toolkit": "^1.1.8",
     "prosemirror-keymap": "^1.2.2",
     "prosemirror-model": "^1.23.0",

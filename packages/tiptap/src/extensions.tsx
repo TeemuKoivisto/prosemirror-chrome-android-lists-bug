@@ -1,7 +1,7 @@
 import React from 'react'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
-import { splitListItem } from './splitListItemTiptap'
+// import { splitListItem } from './splitListItemTiptap'
 // import { splitListItem } from './splitListItemOrig'
 
 export const Document = Node.create({
@@ -89,7 +89,8 @@ export const ListItem = Node.create({
   addKeyboardShortcuts() {
     const nodeType = this.editor.schema.nodes[this.name]
     return {
-      Enter: () => this.editor.commands.command(splitListItem(nodeType))
+      Enter: () => this.editor.commands.splitListItem(nodeType)
+      // Enter: () => this.editor.commands.command(splitListItem(nodeType))
     }
   }
 })

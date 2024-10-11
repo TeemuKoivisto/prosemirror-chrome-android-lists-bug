@@ -8,6 +8,7 @@ import { Editor } from '@tiptap/core'
 // import { ListItem } from '@tiptap/extension-list-item'
 // import { Paragraph } from './Paragraph'
 // import { Text } from '@tiptap/extension-text'
+import { ListKeymap } from '@tiptap/extension-list-keymap'
 import { Document, BulletList, ListItem, Paragraph, Text } from './extensions'
 import { applyDevTools } from 'prosemirror-dev-toolkit'
 
@@ -18,7 +19,25 @@ import './styles.css'
 export function TiptapEditor() {
   const editor = useEditor({
     content: defaultDoc,
-    extensions: [BulletList, Document, ListItem, Paragraph, Text]
+    extensions: [
+      BulletList,
+      Document,
+      ListItem,
+      Paragraph,
+      Text,
+      ListKeymap.configure({
+        listTypes: [
+          {
+            itemName: 'listItem',
+            wrapperNames: ['bulletList', 'orderedList']
+          },
+          {
+            itemName: 'taskItem',
+            wrapperNames: ['taskList']
+          }
+        ]
+      })
+    ]
   })
   React.useEffect(() => {
     editor?.view && applyDevTools(editor.view)

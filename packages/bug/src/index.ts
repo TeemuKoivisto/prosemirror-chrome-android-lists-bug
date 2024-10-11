@@ -2,6 +2,7 @@ import { Schema } from 'prosemirror-model'
 import { EditorState } from 'prosemirror-state'
 import { EditorView } from 'prosemirror-view'
 import { keymap } from 'prosemirror-keymap'
+import { baseKeymap } from 'prosemirror-commands'
 import { splitListItem } from 'prosemirror-schema-list'
 import { applyDevTools } from 'prosemirror-dev-toolkit'
 
@@ -98,7 +99,12 @@ const schema = new Schema({
 
 const state = EditorState.create({
   schema,
-  plugins: [keymap({ Enter: splitListItem(schema.nodes.list_item) })],
+  plugins: [
+    keymap({
+      Enter: splitListItem(schema.nodes.list_item),
+      Backspace: baseKeymap['Backspace']
+    })
+  ],
   doc: schema.nodeFromJSON(defaultDoc)
 })
 

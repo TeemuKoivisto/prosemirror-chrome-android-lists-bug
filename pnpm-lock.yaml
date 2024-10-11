@@ -59,6 +59,37 @@ importers:
       prosemirror-dev-toolkit:
         specifier: ^1.1.8
         version: 1.1.8(svelte@4.2.19)
+      prosemirror-keymap:
+        specifier: ^1.2.2
+        version: 1.2.2
+      prosemirror-model:
+        specifier: ^1.23.0
+        version: 1.23.0
+      prosemirror-schema-list:
+        specifier: ^1.4.1
+        version: 1.4.1
+      prosemirror-state:
+        specifier: ^1.4.3
+        version: 1.4.3
+      prosemirror-view:
+        specifier: ^1.34.3
+        version: 1.34.3
+    devDependencies:
+      typescript:
+        specifier: ^5.6.3
+        version: 5.6.3
+      vite:
+        specifier: ^5.4.8
+        version: 5.4.8
+
+  packages/nodeview:
+    dependencies:
+      prosemirror-commands:
+        specifier: ^1.6.0
+        version: 1.6.0
+      prosemirror-dev-toolkit:
+        specifier: ^1.1.8
+        version: 1.1.8(svelte@4.2.19)
       prosemirror-example-setup:
         specifier: ^1.2.3
         version: 1.2.3
@@ -103,6 +134,9 @@ importers:
         specifier: ^2.8.0
         version: 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))
       '@tiptap/extension-list-item':
+        specifier: ^2.8.0
+        version: 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))
+      '@tiptap/extension-list-keymap':
         specifier: ^2.8.0
         version: 2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))
       '@tiptap/extension-paragraph':
@@ -621,6 +655,11 @@ packages:
 
   '@tiptap/extension-list-item@2.8.0':
     resolution: {integrity: sha512-o7OGymGxB0B9x3x2prp3KBDYFuBYGc5sW69O672jk8G52DqhzzndgPnkk0qUn8nXAUKuDGbJmpmHVA2kagqnRg==}
+    peerDependencies:
+      '@tiptap/core': ^2.7.0
+
+  '@tiptap/extension-list-keymap@2.8.0':
+    resolution: {integrity: sha512-+Q4Q76/VIq1EAKnX4okXUct+31+/GYXjIn7+5YrV9sbSERPq8s615ffHNhimGZhpTuhlou10jyNsUtok2g9nRQ==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
 
@@ -2921,6 +2960,10 @@ snapshots:
       tippy.js: 6.3.7
 
   '@tiptap/extension-list-item@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))':
+    dependencies:
+      '@tiptap/core': 2.8.0(@tiptap/pm@2.8.0)
+
+  '@tiptap/extension-list-keymap@2.8.0(@tiptap/core@2.8.0(@tiptap/pm@2.8.0))':
     dependencies:
       '@tiptap/core': 2.8.0(@tiptap/pm@2.8.0)
 

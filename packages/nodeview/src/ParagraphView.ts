@@ -27,8 +27,10 @@ export class ParagraphView implements NodeView {
       dom.appendChild(contentWrapper)
     }
     const divBehindContent = document.createElement('div')
-    divBehindContent.setAttribute('contenteditable', 'false')
-    dom.appendChild(divBehindContent)
+    const wrapper = document.createElement('div')
+    wrapper.setAttribute('contenteditable', 'false')
+    wrapper.appendChild(divBehindContent)
+    dom.appendChild(wrapper)
     this.dom = dom
   }
 
