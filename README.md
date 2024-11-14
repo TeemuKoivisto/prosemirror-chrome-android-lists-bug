@@ -10,6 +10,8 @@ https://teemukoivisto.github.io/prosemirror-chrome-android-lists-bug
 
 https://github.com/user-attachments/assets/38304859-e605-4433-ada3-2e9cda5a75b6
 
+https://github.com/user-attachments/assets/64ad607a-5a4b-4c29-8070-c53ce6547ebe
+
 https://prosemirror.net
 
 https://github.com/user-attachments/assets/f0d150a8-bd06-432a-8fb0-d5b626983ba4
