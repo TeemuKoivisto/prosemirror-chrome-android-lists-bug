@@ -1,6 +1,6 @@
-import { Schema } from 'prosemirror-model'
+import { DOMSerializer, Node as PMNode, Schema } from 'prosemirror-model'
 import { EditorState } from 'prosemirror-state'
-import { EditorView } from 'prosemirror-view'
+import { EditorView, NodeView } from 'prosemirror-view'
 import { keymap } from 'prosemirror-keymap'
 import { baseKeymap } from 'prosemirror-commands'
 import { splitListItem } from 'prosemirror-schema-list'
@@ -97,6 +97,33 @@ const schema = new Schema({
   }
 })
 
+class ParagraphView implements NodeView {
+  dom: Node
+  contentDOM?: HTMLElement
+  node: PMNode
+
+  constructor(
+    node: PMNode,
+    readonly view: EditorView
+  ) {
+    this.node = node
+    this.view = view
+    const toDOM = this.node.type.spec.toDOM
+    if (!toDOM) {
+      throw Error(`No toDOM method provided to node type ${this.node.type}`)
+    }
+    const { dom: _dom, contentDOM } = DOMSerializer.renderSpec(document, toDOM(this.node))
+    this.contentDOM = contentDOM
+    this.dom = _dom
+  }
+
+  destroy() {
+    while (this.dom.firstChild) {
+      this.dom.removeChild(this.dom.firstChild)
+    }
+  }
+}
+
 const state = EditorState.create({
   schema,
   plugins: [
@@ -109,7 +136,10 @@ const state = EditorState.create({
 })
 
 const view = new EditorView(document.querySelector('#editor') as HTMLElement, {
-  state
+  state,
+  nodeViews: {
+    paragraph: (n, v) => new ParagraphView(n, v)
+  }
 })
 
 applyDevTools(view)
