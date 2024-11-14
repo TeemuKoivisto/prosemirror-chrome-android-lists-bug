@@ -1,3 +1,6 @@
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -784,7 +787,7 @@ function checkJoin(main, sub) {
   if (!sub.type.compatibleContent(main.type))
     throw new ReplaceError("Cannot join " + sub.type.name + " onto " + main.type.name);
 }
-function joinable($before, $after, depth) {
+function joinable$1($before, $after, depth) {
   let node = $before.node(depth);
   checkJoin(node, $after.node(depth));
   return node;
@@ -818,8 +821,8 @@ function close(node, content) {
   return node.copy(content);
 }
 function replaceThreeWay($from, $start, $end, $to, depth) {
-  let openStart = $from.depth > depth && joinable($from, $start, depth + 1);
-  let openEnd = $to.depth > depth && joinable($end, $to, depth + 1);
+  let openStart = $from.depth > depth && joinable$1($from, $start, depth + 1);
+  let openEnd = $to.depth > depth && joinable$1($end, $to, depth + 1);
   let content = [];
   addRange(null, $from, depth, content);
   if (openStart && openEnd && $start.index(depth) == $end.index(depth)) {
@@ -839,7 +842,7 @@ function replaceTwoWay($from, $to, depth) {
   let content = [];
   addRange(null, $from, depth, content);
   if ($from.depth > depth) {
-    let type = joinable($from, $to, depth + 1);
+    let type = joinable$1($from, $to, depth + 1);
     addNode(close(type, replaceTwoWay($from, $to, depth + 1)), content);
   }
   addRange($to, null, depth, content);
@@ -3326,19 +3329,19 @@ function renderSpec(doc2, structure, xmlNS, blockArraysIn) {
   }
   return { dom, contentDOM };
 }
-const lower16 = 65535;
-const factor16 = Math.pow(2, 16);
-function makeRecover(index, offset) {
-  return index + offset * factor16;
+const lower16$1 = 65535;
+const factor16$1 = Math.pow(2, 16);
+function makeRecover$1(index, offset) {
+  return index + offset * factor16$1;
 }
-function recoverIndex(value) {
-  return value & lower16;
+function recoverIndex$1(value) {
+  return value & lower16$1;
 }
-function recoverOffset(value) {
-  return (value - (value & lower16)) / factor16;
+function recoverOffset$1(value) {
+  return (value - (value & lower16$1)) / factor16$1;
 }
-const DEL_BEFORE = 1, DEL_AFTER = 2, DEL_ACROSS = 4, DEL_SIDE = 8;
-class MapResult {
+const DEL_BEFORE$1 = 1, DEL_AFTER$1 = 2, DEL_ACROSS$1 = 4, DEL_SIDE$1 = 8;
+let MapResult$1 = class MapResult {
   /**
   @internal
   */
@@ -3353,19 +3356,19 @@ class MapResult {
   argument from the document.
   */
   get deleted() {
-    return (this.delInfo & DEL_SIDE) > 0;
+    return (this.delInfo & DEL_SIDE$1) > 0;
   }
   /**
   Tells you whether the token before the mapped position was deleted.
   */
   get deletedBefore() {
-    return (this.delInfo & (DEL_BEFORE | DEL_ACROSS)) > 0;
+    return (this.delInfo & (DEL_BEFORE$1 | DEL_ACROSS$1)) > 0;
   }
   /**
   True when the token after the mapped position was deleted.
   */
   get deletedAfter() {
-    return (this.delInfo & (DEL_AFTER | DEL_ACROSS)) > 0;
+    return (this.delInfo & (DEL_AFTER$1 | DEL_ACROSS$1)) > 0;
   }
   /**
   Tells whether any of the steps mapped through deletes across the
@@ -3373,10 +3376,10 @@ class MapResult {
   position).
   */
   get deletedAcross() {
-    return (this.delInfo & DEL_ACROSS) > 0;
+    return (this.delInfo & DEL_ACROSS$1) > 0;
   }
-}
-class StepMap {
+};
+let StepMap$1 = class StepMap {
   /**
   Create a position map. The modifications to the document are
   represented as an array of numbers, in which each group of three
@@ -3392,11 +3395,11 @@ class StepMap {
   @internal
   */
   recover(value) {
-    let diff2 = 0, index = recoverIndex(value);
+    let diff2 = 0, index = recoverIndex$1(value);
     if (!this.inverted)
       for (let i = 0; i < index; i++)
         diff2 += this.ranges[i * 3 + 2] - this.ranges[i * 3 + 1];
-    return this.ranges[index * 3] + diff2 + recoverOffset(value);
+    return this.ranges[index * 3] + diff2 + recoverOffset$1(value);
   }
   mapResult(pos, assoc = 1) {
     return this._map(pos, assoc, false);
@@ -3419,21 +3422,21 @@ class StepMap {
         let result = start + diff2 + (side < 0 ? 0 : newSize);
         if (simple)
           return result;
-        let recover = pos == (assoc < 0 ? start : end) ? null : makeRecover(i / 3, pos - start);
-        let del = pos == start ? DEL_AFTER : pos == end ? DEL_BEFORE : DEL_ACROSS;
+        let recover = pos == (assoc < 0 ? start : end) ? null : makeRecover$1(i / 3, pos - start);
+        let del2 = pos == start ? DEL_AFTER$1 : pos == end ? DEL_BEFORE$1 : DEL_ACROSS$1;
         if (assoc < 0 ? pos != start : pos != end)
-          del |= DEL_SIDE;
-        return new MapResult(result, del, recover);
+          del2 |= DEL_SIDE$1;
+        return new MapResult$1(result, del2, recover);
       }
       diff2 += newSize - oldSize;
     }
-    return simple ? pos + diff2 : new MapResult(pos + diff2, 0, null);
+    return simple ? pos + diff2 : new MapResult$1(pos + diff2, 0, null);
   }
   /**
   @internal
   */
   touches(pos, recover) {
-    let diff2 = 0, index = recoverIndex(recover);
+    let diff2 = 0, index = recoverIndex$1(recover);
     let oldIndex = this.inverted ? 2 : 1, newIndex = this.inverted ? 1 : 2;
     for (let i = 0; i < this.ranges.length; i += 3) {
       let start = this.ranges[i] - (this.inverted ? diff2 : 0);
@@ -3480,8 +3483,8 @@ class StepMap {
   static offset(n) {
     return n == 0 ? StepMap.empty : new StepMap(n < 0 ? [0, -n, 0] : [0, 0, n]);
   }
-}
-StepMap.empty = new StepMap([]);
+};
+StepMap$1.empty = new StepMap$1([]);
 class Mapping {
   /**
   Create a new mapping with the given position maps.
@@ -3596,18 +3599,18 @@ class Mapping {
       delInfo |= result.delInfo;
       pos = result.pos;
     }
-    return simple ? pos : new MapResult(pos, delInfo, null);
+    return simple ? pos : new MapResult$1(pos, delInfo, null);
   }
 }
-const stepsByID = /* @__PURE__ */ Object.create(null);
-class Step {
+const stepsByID$1 = /* @__PURE__ */ Object.create(null);
+let Step$1 = class Step {
   /**
   Get the step map that represents the changes made by this step,
   and which can be used to transform between positions in the old
   and the new document.
   */
   getMap() {
-    return StepMap.empty;
+    return StepMap$1.empty;
   }
   /**
   Try to merge this step with another one, to be applied directly
@@ -3624,7 +3627,7 @@ class Step {
   static fromJSON(schema2, json) {
     if (!json || !json.stepType)
       throw new RangeError("Invalid input for Step.fromJSON");
-    let type = stepsByID[json.stepType];
+    let type = stepsByID$1[json.stepType];
     if (!type)
       throw new RangeError(`No step type ${json.stepType} defined`);
     return type.fromJSON(schema2, json);
@@ -3636,14 +3639,14 @@ class Step {
   that's unlikely to clash with steps from other modules.
   */
   static jsonID(id, stepClass) {
-    if (id in stepsByID)
+    if (id in stepsByID$1)
       throw new RangeError("Duplicate use of step JSON ID " + id);
-    stepsByID[id] = stepClass;
+    stepsByID$1[id] = stepClass;
     stepClass.prototype.jsonID = id;
     return stepClass;
   }
-}
-class StepResult {
+};
+let StepResult$1 = class StepResult {
   /**
   @internal
   */
@@ -3677,20 +3680,20 @@ class StepResult {
       throw e;
     }
   }
-}
-function mapFragment(fragment, f, parent) {
+};
+function mapFragment$1(fragment, f, parent) {
   let mapped = [];
   for (let i = 0; i < fragment.childCount; i++) {
     let child = fragment.child(i);
     if (child.content.size)
-      child = child.copy(mapFragment(child.content, f, child));
+      child = child.copy(mapFragment$1(child.content, f, child));
     if (child.isInline)
       child = f(child, parent, i);
     mapped.push(child);
   }
   return Fragment.fromArray(mapped);
 }
-class AddMarkStep extends Step {
+let AddMarkStep$1 = class AddMarkStep extends Step$1 {
   /**
   Create a mark step.
   */
@@ -3703,15 +3706,15 @@ class AddMarkStep extends Step {
   apply(doc2) {
     let oldSlice = doc2.slice(this.from, this.to), $from = doc2.resolve(this.from);
     let parent = $from.node($from.sharedDepth(this.to));
-    let slice = new Slice(mapFragment(oldSlice.content, (node, parent2) => {
+    let slice = new Slice(mapFragment$1(oldSlice.content, (node, parent2) => {
       if (!node.isAtom || !parent2.type.allowsMarkType(this.mark.type))
         return node;
       return node.mark(this.mark.addToSet(node.marks));
     }, parent), oldSlice.openStart, oldSlice.openEnd);
-    return StepResult.fromReplace(doc2, this.from, this.to, slice);
+    return StepResult$1.fromReplace(doc2, this.from, this.to, slice);
   }
   invert() {
-    return new RemoveMarkStep(this.from, this.to, this.mark);
+    return new RemoveMarkStep$1(this.from, this.to, this.mark);
   }
   map(mapping) {
     let from = mapping.mapResult(this.from, 1), to = mapping.mapResult(this.to, -1);
@@ -3740,9 +3743,9 @@ class AddMarkStep extends Step {
       throw new RangeError("Invalid input for AddMarkStep.fromJSON");
     return new AddMarkStep(json.from, json.to, schema2.markFromJSON(json.mark));
   }
-}
-Step.jsonID("addMark", AddMarkStep);
-class RemoveMarkStep extends Step {
+};
+Step$1.jsonID("addMark", AddMarkStep$1);
+let RemoveMarkStep$1 = class RemoveMarkStep extends Step$1 {
   /**
   Create a mark-removing step.
   */
@@ -3754,13 +3757,13 @@ class RemoveMarkStep extends Step {
   }
   apply(doc2) {
     let oldSlice = doc2.slice(this.from, this.to);
-    let slice = new Slice(mapFragment(oldSlice.content, (node) => {
+    let slice = new Slice(mapFragment$1(oldSlice.content, (node) => {
       return node.mark(this.mark.removeFromSet(node.marks));
     }, doc2), oldSlice.openStart, oldSlice.openEnd);
-    return StepResult.fromReplace(doc2, this.from, this.to, slice);
+    return StepResult$1.fromReplace(doc2, this.from, this.to, slice);
   }
   invert() {
-    return new AddMarkStep(this.from, this.to, this.mark);
+    return new AddMarkStep$1(this.from, this.to, this.mark);
   }
   map(mapping) {
     let from = mapping.mapResult(this.from, 1), to = mapping.mapResult(this.to, -1);
@@ -3789,9 +3792,9 @@ class RemoveMarkStep extends Step {
       throw new RangeError("Invalid input for RemoveMarkStep.fromJSON");
     return new RemoveMarkStep(json.from, json.to, schema2.markFromJSON(json.mark));
   }
-}
-Step.jsonID("removeMark", RemoveMarkStep);
-class AddNodeMarkStep extends Step {
+};
+Step$1.jsonID("removeMark", RemoveMarkStep$1);
+let AddNodeMarkStep$1 = class AddNodeMarkStep extends Step$1 {
   /**
   Create a node mark step.
   */
@@ -3803,9 +3806,9 @@ class AddNodeMarkStep extends Step {
   apply(doc2) {
     let node = doc2.nodeAt(this.pos);
     if (!node)
-      return StepResult.fail("No node at mark step's position");
+      return StepResult$1.fail("No node at mark step's position");
     let updated = node.type.create(node.attrs, null, this.mark.addToSet(node.marks));
-    return StepResult.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
+    return StepResult$1.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
   }
   invert(doc2) {
     let node = doc2.nodeAt(this.pos);
@@ -3818,7 +3821,7 @@ class AddNodeMarkStep extends Step {
         return new AddNodeMarkStep(this.pos, this.mark);
       }
     }
-    return new RemoveNodeMarkStep(this.pos, this.mark);
+    return new RemoveNodeMarkStep$1(this.pos, this.mark);
   }
   map(mapping) {
     let pos = mapping.mapResult(this.pos, 1);
@@ -3835,9 +3838,9 @@ class AddNodeMarkStep extends Step {
       throw new RangeError("Invalid input for AddNodeMarkStep.fromJSON");
     return new AddNodeMarkStep(json.pos, schema2.markFromJSON(json.mark));
   }
-}
-Step.jsonID("addNodeMark", AddNodeMarkStep);
-class RemoveNodeMarkStep extends Step {
+};
+Step$1.jsonID("addNodeMark", AddNodeMarkStep$1);
+let RemoveNodeMarkStep$1 = class RemoveNodeMarkStep extends Step$1 {
   /**
   Create a mark-removing step.
   */
@@ -3849,15 +3852,15 @@ class RemoveNodeMarkStep extends Step {
   apply(doc2) {
     let node = doc2.nodeAt(this.pos);
     if (!node)
-      return StepResult.fail("No node at mark step's position");
+      return StepResult$1.fail("No node at mark step's position");
     let updated = node.type.create(node.attrs, null, this.mark.removeFromSet(node.marks));
-    return StepResult.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
+    return StepResult$1.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
   }
   invert(doc2) {
     let node = doc2.nodeAt(this.pos);
     if (!node || !this.mark.isInSet(node.marks))
       return this;
-    return new AddNodeMarkStep(this.pos, this.mark);
+    return new AddNodeMarkStep$1(this.pos, this.mark);
   }
   map(mapping) {
     let pos = mapping.mapResult(this.pos, 1);
@@ -3874,9 +3877,9 @@ class RemoveNodeMarkStep extends Step {
       throw new RangeError("Invalid input for RemoveNodeMarkStep.fromJSON");
     return new RemoveNodeMarkStep(json.pos, schema2.markFromJSON(json.mark));
   }
-}
-Step.jsonID("removeNodeMark", RemoveNodeMarkStep);
-class ReplaceStep extends Step {
+};
+Step$1.jsonID("removeNodeMark", RemoveNodeMarkStep$1);
+let ReplaceStep$1 = class ReplaceStep extends Step$1 {
   /**
   The given `slice` should fit the 'gap' between `from` and
   `to`—the depths must line up, and the surrounding nodes must be
@@ -3894,12 +3897,12 @@ class ReplaceStep extends Step {
     this.structure = structure;
   }
   apply(doc2) {
-    if (this.structure && contentBetween(doc2, this.from, this.to))
-      return StepResult.fail("Structure replace would overwrite content");
-    return StepResult.fromReplace(doc2, this.from, this.to, this.slice);
+    if (this.structure && contentBetween$1(doc2, this.from, this.to))
+      return StepResult$1.fail("Structure replace would overwrite content");
+    return StepResult$1.fromReplace(doc2, this.from, this.to, this.slice);
   }
   getMap() {
-    return new StepMap([this.from, this.to - this.from, this.slice.size]);
+    return new StepMap$1([this.from, this.to - this.from, this.slice.size]);
   }
   invert(doc2) {
     return new ReplaceStep(this.from, this.from + this.slice.size, doc2.slice(this.from, this.to));
@@ -3939,9 +3942,9 @@ class ReplaceStep extends Step {
       throw new RangeError("Invalid input for ReplaceStep.fromJSON");
     return new ReplaceStep(json.from, json.to, Slice.fromJSON(schema2, json.slice), !!json.structure);
   }
-}
-Step.jsonID("replace", ReplaceStep);
-class ReplaceAroundStep extends Step {
+};
+Step$1.jsonID("replace", ReplaceStep$1);
+let ReplaceAroundStep$1 = class ReplaceAroundStep extends Step$1 {
   /**
   Create a replace-around step with the given range and gap.
   `insert` should be the point in the slice into which the content
@@ -3959,18 +3962,18 @@ class ReplaceAroundStep extends Step {
     this.structure = structure;
   }
   apply(doc2) {
-    if (this.structure && (contentBetween(doc2, this.from, this.gapFrom) || contentBetween(doc2, this.gapTo, this.to)))
-      return StepResult.fail("Structure gap-replace would overwrite content");
+    if (this.structure && (contentBetween$1(doc2, this.from, this.gapFrom) || contentBetween$1(doc2, this.gapTo, this.to)))
+      return StepResult$1.fail("Structure gap-replace would overwrite content");
     let gap = doc2.slice(this.gapFrom, this.gapTo);
     if (gap.openStart || gap.openEnd)
-      return StepResult.fail("Gap is not a flat range");
+      return StepResult$1.fail("Gap is not a flat range");
     let inserted = this.slice.insertAt(this.insert, gap.content);
     if (!inserted)
-      return StepResult.fail("Content does not fit in gap");
-    return StepResult.fromReplace(doc2, this.from, this.to, inserted);
+      return StepResult$1.fail("Content does not fit in gap");
+    return StepResult$1.fromReplace(doc2, this.from, this.to, inserted);
   }
   getMap() {
-    return new StepMap([
+    return new StepMap$1([
       this.from,
       this.gapFrom - this.from,
       this.insert,
@@ -4014,9 +4017,9 @@ class ReplaceAroundStep extends Step {
       throw new RangeError("Invalid input for ReplaceAroundStep.fromJSON");
     return new ReplaceAroundStep(json.from, json.to, json.gapFrom, json.gapTo, Slice.fromJSON(schema2, json.slice), json.insert, !!json.structure);
   }
-}
-Step.jsonID("replaceAround", ReplaceAroundStep);
-function contentBetween(doc2, from, to) {
+};
+Step$1.jsonID("replaceAround", ReplaceAroundStep$1);
+function contentBetween$1(doc2, from, to) {
   let $from = doc2.resolve(from), dist = to - from, depth = $from.depth;
   while (dist > 0 && depth > 0 && $from.indexAfter(depth) == $from.node(depth).childCount) {
     depth--;
@@ -4048,13 +4051,13 @@ function addMark(tr, from, to, mark) {
           if (removing && removing.to == start && removing.mark.eq(marks[i]))
             removing.to = end;
           else
-            removed.push(removing = new RemoveMarkStep(start, end, marks[i]));
+            removed.push(removing = new RemoveMarkStep$1(start, end, marks[i]));
         }
       }
       if (adding && adding.to == start)
         adding.to = end;
       else
-        added2.push(adding = new AddMarkStep(start, end, mark));
+        added2.push(adding = new AddMarkStep$1(start, end, mark));
     }
   });
   removed.forEach((s) => tr.step(s));
@@ -4097,7 +4100,7 @@ function removeMark(tr, from, to, mark) {
       }
     }
   });
-  matched.forEach((m) => tr.step(new RemoveMarkStep(m.from, m.to, m.style)));
+  matched.forEach((m) => tr.step(new RemoveMarkStep$1(m.from, m.to, m.style)));
 }
 function clearIncompatible(tr, pos, parentType, match = parentType.contentMatch, clearNewlines = true) {
   let node = tr.doc.nodeAt(pos);
@@ -4106,18 +4109,18 @@ function clearIncompatible(tr, pos, parentType, match = parentType.contentMatch,
     let child = node.child(i), end = cur + child.nodeSize;
     let allowed = match.matchType(child.type);
     if (!allowed) {
-      replSteps.push(new ReplaceStep(cur, end, Slice.empty));
+      replSteps.push(new ReplaceStep$1(cur, end, Slice.empty));
     } else {
       match = allowed;
       for (let j = 0; j < child.marks.length; j++)
         if (!parentType.allowsMarkType(child.marks[j].type))
-          tr.step(new RemoveMarkStep(cur, end, child.marks[j]));
+          tr.step(new RemoveMarkStep$1(cur, end, child.marks[j]));
       if (clearNewlines && child.isText && parentType.whitespace != "pre") {
         let m, newline = /\r?\n|\r/g, slice;
         while (m = newline.exec(child.text)) {
           if (!slice)
             slice = new Slice(Fragment.from(parentType.schema.text(" ", parentType.allowedMarks(child.marks))), 0, 0);
-          replSteps.push(new ReplaceStep(cur + m.index, cur + m.index + m[0].length, slice));
+          replSteps.push(new ReplaceStep$1(cur + m.index, cur + m.index + m[0].length, slice));
         }
       }
     }
@@ -4152,7 +4155,7 @@ function lift(tr, range, target) {
     } else {
       end++;
     }
-  tr.step(new ReplaceAroundStep(start, end, gapStart, gapEnd, new Slice(before.append(after), openStart, openEnd), before.size - openStart, true));
+  tr.step(new ReplaceAroundStep$1(start, end, gapStart, gapEnd, new Slice(before.append(after), openStart, openEnd), before.size - openStart, true));
 }
 function wrap(tr, range, wrappers) {
   let content = Fragment.empty;
@@ -4165,7 +4168,7 @@ function wrap(tr, range, wrappers) {
     content = Fragment.from(wrappers[i].type.create(wrappers[i].attrs, content));
   }
   let start = range.start, end = range.end;
-  tr.step(new ReplaceAroundStep(start, end, start, end, new Slice(content, 0, 0), wrappers.length, true));
+  tr.step(new ReplaceAroundStep$1(start, end, start, end, new Slice(content, 0, 0), wrappers.length, true));
 }
 function setBlockType(tr, from, to, type, attrs) {
   if (!type.isTextblock)
@@ -4187,7 +4190,7 @@ function setBlockType(tr, from, to, type, attrs) {
       clearIncompatible(tr, tr.mapping.slice(mapFrom).map(pos, 1), type, void 0, convertNewlines === null);
       let mapping = tr.mapping.slice(mapFrom);
       let startM = mapping.map(pos, 1), endM = mapping.map(pos + node.nodeSize, 1);
-      tr.step(new ReplaceAroundStep(startM, endM, startM + 1, endM - 1, new Slice(Fragment.from(type.create(attrsHere, null, node.marks)), 0, 0), 1, true));
+      tr.step(new ReplaceAroundStep$1(startM, endM, startM + 1, endM - 1, new Slice(Fragment.from(type.create(attrsHere, null, node.marks)), 0, 0), 1, true));
       if (convertNewlines === true)
         replaceNewlines(tr, node, pos, mapFrom);
       return false;
@@ -4228,9 +4231,9 @@ function setNodeMarkup(tr, pos, type, attrs, marks) {
     return tr.replaceWith(pos, pos + node.nodeSize, newNode);
   if (!type.validContent(node.content))
     throw new RangeError("Invalid content for node type " + type.name);
-  tr.step(new ReplaceAroundStep(pos, pos + node.nodeSize, pos + 1, pos + node.nodeSize - 1, new Slice(Fragment.from(newNode), 0, 0), 1, true));
+  tr.step(new ReplaceAroundStep$1(pos, pos + node.nodeSize, pos + 1, pos + node.nodeSize - 1, new Slice(Fragment.from(newNode), 0, 0), 1, true));
 }
-function canSplit(doc2, pos, depth = 1, typesAfter) {
+function canSplit$1(doc2, pos, depth = 1, typesAfter) {
   let $pos = doc2.resolve(pos), base2 = $pos.depth - depth;
   let innerType = typesAfter && typesAfter[typesAfter.length - 1] || $pos.parent;
   if (base2 < 0 || $pos.parent.type.spec.isolating || !$pos.parent.canReplace($pos.index(), $pos.parent.childCount) || !innerType.type.validContent($pos.parent.content.cutByIndex($pos.index(), $pos.parent.childCount)))
@@ -4258,10 +4261,10 @@ function split(tr, pos, depth = 1, typesAfter) {
     let typeAfter = typesAfter && typesAfter[i];
     after = Fragment.from(typeAfter ? typeAfter.type.create(typeAfter.attrs, after) : $pos.node(d).copy(after));
   }
-  tr.step(new ReplaceStep(pos, pos, new Slice(before.append(after), depth, depth), true));
+  tr.step(new ReplaceStep$1(pos, pos, new Slice(before.append(after), depth, depth), true));
 }
 function join(tr, pos, depth) {
-  let step = new ReplaceStep(pos - depth, pos + depth, Slice.empty, true);
+  let step = new ReplaceStep$1(pos - depth, pos + depth, Slice.empty, true);
   tr.step(step);
 }
 function insertPoint(doc2, pos, nodeType) {
@@ -4286,42 +4289,18 @@ function insertPoint(doc2, pos, nodeType) {
     }
   return null;
 }
-function dropPoint(doc2, pos, slice) {
-  let $pos = doc2.resolve(pos);
-  if (!slice.content.size)
-    return pos;
-  let content = slice.content;
-  for (let i = 0; i < slice.openStart; i++)
-    content = content.firstChild.content;
-  for (let pass = 1; pass <= (slice.openStart == 0 && slice.size ? 2 : 1); pass++) {
-    for (let d = $pos.depth; d >= 0; d--) {
-      let bias = d == $pos.depth ? 0 : $pos.pos <= ($pos.start(d + 1) + $pos.end(d + 1)) / 2 ? -1 : 1;
-      let insertPos = $pos.index(d) + (bias > 0 ? 1 : 0);
-      let parent = $pos.node(d), fits = false;
-      if (pass == 1) {
-        fits = parent.canReplace(insertPos, insertPos, content);
-      } else {
-        let wrapping = parent.contentMatchAt(insertPos).findWrapping(content.firstChild.type);
-        fits = wrapping && parent.canReplaceWith(insertPos, insertPos, wrapping[0]);
-      }
-      if (fits)
-        return bias == 0 ? $pos.pos : bias < 0 ? $pos.before(d + 1) : $pos.after(d + 1);
-    }
-  }
-  return null;
-}
-function replaceStep(doc2, from, to = from, slice = Slice.empty) {
+function replaceStep$1(doc2, from, to = from, slice = Slice.empty) {
   if (from == to && !slice.size)
     return null;
   let $from = doc2.resolve(from), $to = doc2.resolve(to);
-  if (fitsTrivially($from, $to, slice))
-    return new ReplaceStep(from, to, slice);
-  return new Fitter($from, $to, slice).fit();
+  if (fitsTrivially$1($from, $to, slice))
+    return new ReplaceStep$1(from, to, slice);
+  return new Fitter$1($from, $to, slice).fit();
 }
-function fitsTrivially($from, $to, slice) {
+function fitsTrivially$1($from, $to, slice) {
   return !slice.openStart && !slice.openEnd && $from.start() == $to.start() && $from.parent.canReplace($from.index(), $to.index(), slice.content);
 }
-class Fitter {
+let Fitter$1 = class Fitter {
   constructor($from, $to, unplaced) {
     this.$from = $from;
     this.$to = $to;
@@ -4361,9 +4340,9 @@ class Fitter {
     }
     let slice = new Slice(content, openStart, openEnd);
     if (moveInline > -1)
-      return new ReplaceAroundStep($from.pos, moveInline, this.$to.pos, this.$to.end(), slice, placedSize);
+      return new ReplaceAroundStep$1($from.pos, moveInline, this.$to.pos, this.$to.end(), slice, placedSize);
     if (slice.size || $from.pos != this.$to.pos)
-      return new ReplaceStep($from.pos, $to.pos, slice);
+      return new ReplaceStep$1($from.pos, $to.pos, slice);
     return null;
   }
   // Find a position on the start spine of `this.unplaced` that has
@@ -4385,7 +4364,7 @@ class Fitter {
       for (let sliceDepth = pass == 1 ? startDepth : this.unplaced.openStart; sliceDepth >= 0; sliceDepth--) {
         let fragment, parent = null;
         if (sliceDepth) {
-          parent = contentAt(this.unplaced.content, sliceDepth - 1).firstChild;
+          parent = contentAt$1(this.unplaced.content, sliceDepth - 1).firstChild;
           fragment = parent.content;
         } else {
           fragment = this.unplaced.content;
@@ -4405,7 +4384,7 @@ class Fitter {
   }
   openMore() {
     let { content, openStart, openEnd } = this.unplaced;
-    let inner = contentAt(content, openStart);
+    let inner = contentAt$1(content, openStart);
     if (!inner.childCount || inner.firstChild.isLeaf)
       return false;
     this.unplaced = new Slice(content, openStart + 1, Math.max(openEnd, inner.size + openStart >= content.size - openEnd ? openStart + 1 : 0));
@@ -4413,12 +4392,12 @@ class Fitter {
   }
   dropNode() {
     let { content, openStart, openEnd } = this.unplaced;
-    let inner = contentAt(content, openStart);
+    let inner = contentAt$1(content, openStart);
     if (inner.childCount <= 1 && openStart > 0) {
       let openAtEnd = content.size - openStart <= openStart + inner.size;
-      this.unplaced = new Slice(dropFromFragment(content, openStart - 1, 1), openStart - 1, openAtEnd ? openStart - 1 : openEnd);
+      this.unplaced = new Slice(dropFromFragment$1(content, openStart - 1, 1), openStart - 1, openAtEnd ? openStart - 1 : openEnd);
     } else {
-      this.unplaced = new Slice(dropFromFragment(content, openStart, 1), openStart, openEnd);
+      this.unplaced = new Slice(dropFromFragment$1(content, openStart, 1), openStart, openEnd);
     }
   }
   // Move content from the unplaced slice at `sliceDepth` to the
@@ -4447,13 +4426,13 @@ class Fitter {
       taken++;
       if (taken > 1 || openStart == 0 || next.content.size) {
         match = matches2;
-        add.push(closeNodeStart(next.mark(type.allowedMarks(next.marks)), taken == 1 ? openStart : 0, taken == fragment.childCount ? openEndCount : -1));
+        add.push(closeNodeStart$1(next.mark(type.allowedMarks(next.marks)), taken == 1 ? openStart : 0, taken == fragment.childCount ? openEndCount : -1));
       }
     }
     let toEnd = taken == fragment.childCount;
     if (!toEnd)
       openEndCount = -1;
-    this.placed = addToFragment(this.placed, frontierDepth, Fragment.from(add));
+    this.placed = addToFragment$1(this.placed, frontierDepth, Fragment.from(add));
     this.frontier[frontierDepth].match = match;
     if (toEnd && openEndCount < 0 && parent && parent.type == this.frontier[this.depth].type && this.frontier.length > 1)
       this.closeFrontierNode();
@@ -4462,13 +4441,13 @@ class Fitter {
       this.frontier.push({ type: node.type, match: node.contentMatchAt(node.childCount) });
       cur = node.content;
     }
-    this.unplaced = !toEnd ? new Slice(dropFromFragment(slice.content, sliceDepth, taken), slice.openStart, slice.openEnd) : sliceDepth == 0 ? Slice.empty : new Slice(dropFromFragment(slice.content, sliceDepth - 1, 1), sliceDepth - 1, openEndCount < 0 ? slice.openEnd : sliceDepth - 1);
+    this.unplaced = !toEnd ? new Slice(dropFromFragment$1(slice.content, sliceDepth, taken), slice.openStart, slice.openEnd) : sliceDepth == 0 ? Slice.empty : new Slice(dropFromFragment$1(slice.content, sliceDepth - 1, 1), sliceDepth - 1, openEndCount < 0 ? slice.openEnd : sliceDepth - 1);
   }
   mustMoveInline() {
     if (!this.$to.parent.isTextblock)
       return -1;
     let top = this.frontier[this.depth], level;
-    if (!top.type.isTextblock || !contentAfterFits(this.$to, this.$to.depth, top.type, top.match, false) || this.$to.depth == this.depth && (level = this.findCloseLevel(this.$to)) && level.depth == this.depth)
+    if (!top.type.isTextblock || !contentAfterFits$1(this.$to, this.$to.depth, top.type, top.match, false) || this.$to.depth == this.depth && (level = this.findCloseLevel(this.$to)) && level.depth == this.depth)
       return -1;
     let { depth } = this.$to, after = this.$to.after(depth);
     while (depth > 1 && after == this.$to.end(--depth))
@@ -4479,12 +4458,12 @@ class Fitter {
     scan: for (let i = Math.min(this.depth, $to.depth); i >= 0; i--) {
       let { match, type } = this.frontier[i];
       let dropInner = i < $to.depth && $to.end(i + 1) == $to.pos + ($to.depth - (i + 1));
-      let fit = contentAfterFits($to, i, type, match, dropInner);
+      let fit = contentAfterFits$1($to, i, type, match, dropInner);
       if (!fit)
         continue;
       for (let d = i - 1; d >= 0; d--) {
         let { match: match2, type: type2 } = this.frontier[d];
-        let matches2 = contentAfterFits($to, d, type2, match2, true);
+        let matches2 = contentAfterFits$1($to, d, type2, match2, true);
         if (!matches2 || matches2.childCount)
           continue scan;
       }
@@ -4498,7 +4477,7 @@ class Fitter {
     while (this.depth > close2.depth)
       this.closeFrontierNode();
     if (close2.fit.childCount)
-      this.placed = addToFragment(this.placed, close2.depth, close2.fit);
+      this.placed = addToFragment$1(this.placed, close2.depth, close2.fit);
     $to = close2.move;
     for (let d = close2.depth + 1; d <= $to.depth; d++) {
       let node = $to.node(d), add = node.type.contentMatch.fillBefore(node.content, true, $to.index(d));
@@ -4509,37 +4488,37 @@ class Fitter {
   openFrontierNode(type, attrs = null, content) {
     let top = this.frontier[this.depth];
     top.match = top.match.matchType(type);
-    this.placed = addToFragment(this.placed, this.depth, Fragment.from(type.create(attrs, content)));
+    this.placed = addToFragment$1(this.placed, this.depth, Fragment.from(type.create(attrs, content)));
     this.frontier.push({ type, match: type.contentMatch });
   }
   closeFrontierNode() {
     let open = this.frontier.pop();
     let add = open.match.fillBefore(Fragment.empty, true);
     if (add.childCount)
-      this.placed = addToFragment(this.placed, this.frontier.length, add);
+      this.placed = addToFragment$1(this.placed, this.frontier.length, add);
   }
-}
-function dropFromFragment(fragment, depth, count) {
+};
+function dropFromFragment$1(fragment, depth, count) {
   if (depth == 0)
     return fragment.cutByIndex(count, fragment.childCount);
-  return fragment.replaceChild(0, fragment.firstChild.copy(dropFromFragment(fragment.firstChild.content, depth - 1, count)));
+  return fragment.replaceChild(0, fragment.firstChild.copy(dropFromFragment$1(fragment.firstChild.content, depth - 1, count)));
 }
-function addToFragment(fragment, depth, content) {
+function addToFragment$1(fragment, depth, content) {
   if (depth == 0)
     return fragment.append(content);
-  return fragment.replaceChild(fragment.childCount - 1, fragment.lastChild.copy(addToFragment(fragment.lastChild.content, depth - 1, content)));
+  return fragment.replaceChild(fragment.childCount - 1, fragment.lastChild.copy(addToFragment$1(fragment.lastChild.content, depth - 1, content)));
 }
-function contentAt(fragment, depth) {
+function contentAt$1(fragment, depth) {
   for (let i = 0; i < depth; i++)
     fragment = fragment.firstChild.content;
   return fragment;
 }
-function closeNodeStart(node, openStart, openEnd) {
+function closeNodeStart$1(node, openStart, openEnd) {
   if (openStart <= 0)
     return node;
   let frag = node.content;
   if (openStart > 1)
-    frag = frag.replaceChild(0, closeNodeStart(frag.firstChild, openStart - 1, frag.childCount == 1 ? openEnd - 1 : 0));
+    frag = frag.replaceChild(0, closeNodeStart$1(frag.firstChild, openStart - 1, frag.childCount == 1 ? openEnd - 1 : 0));
   if (openStart > 0) {
     frag = node.type.contentMatch.fillBefore(frag).append(frag);
     if (openEnd <= 0)
@@ -4547,14 +4526,14 @@ function closeNodeStart(node, openStart, openEnd) {
   }
   return node.copy(frag);
 }
-function contentAfterFits($to, depth, type, match, open) {
+function contentAfterFits$1($to, depth, type, match, open) {
   let node = $to.node(depth), index = open ? $to.indexAfter(depth) : $to.index(depth);
   if (index == node.childCount && !type.compatibleContent(node.type))
     return null;
   let fit = match.fillBefore(node.content, true, index);
-  return fit && !invalidMarks(type, node.content, index) ? fit : null;
+  return fit && !invalidMarks$1(type, node.content, index) ? fit : null;
 }
-function invalidMarks(type, fragment, start) {
+function invalidMarks$1(type, fragment, start) {
   for (let i = start; i < fragment.childCount; i++)
     if (!type.allowsMarks(fragment.child(i).marks))
       return true;
@@ -4567,8 +4546,8 @@ function replaceRange(tr, from, to, slice) {
   if (!slice.size)
     return tr.deleteRange(from, to);
   let $from = tr.doc.resolve(from), $to = tr.doc.resolve(to);
-  if (fitsTrivially($from, $to, slice))
-    return tr.step(new ReplaceStep(from, to, slice));
+  if (fitsTrivially$1($from, $to, slice))
+    return tr.step(new ReplaceStep$1(from, to, slice));
   let targetDepths = coveredDepths($from, tr.doc.resolve(to));
   if (targetDepths[targetDepths.length - 1] == 0)
     targetDepths.pop();
@@ -4674,7 +4653,7 @@ function coveredDepths($from, $to) {
   }
   return result;
 }
-class AttrStep extends Step {
+let AttrStep$1 = class AttrStep extends Step$1 {
   /**
   Construct an attribute step.
   */
@@ -4687,16 +4666,16 @@ class AttrStep extends Step {
   apply(doc2) {
     let node = doc2.nodeAt(this.pos);
     if (!node)
-      return StepResult.fail("No node at attribute step's position");
+      return StepResult$1.fail("No node at attribute step's position");
     let attrs = /* @__PURE__ */ Object.create(null);
     for (let name in node.attrs)
       attrs[name] = node.attrs[name];
     attrs[this.attr] = this.value;
     let updated = node.type.create(attrs, null, node.marks);
-    return StepResult.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
+    return StepResult$1.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
   }
   getMap() {
-    return StepMap.empty;
+    return StepMap$1.empty;
   }
   invert(doc2) {
     return new AttrStep(this.pos, this.attr, doc2.nodeAt(this.pos).attrs[this.attr]);
@@ -4713,9 +4692,9 @@ class AttrStep extends Step {
       throw new RangeError("Invalid input for AttrStep.fromJSON");
     return new AttrStep(json.pos, json.attr, json.value);
   }
-}
-Step.jsonID("attr", AttrStep);
-class DocAttrStep extends Step {
+};
+Step$1.jsonID("attr", AttrStep$1);
+let DocAttrStep$1 = class DocAttrStep extends Step$1 {
   /**
   Construct an attribute step.
   */
@@ -4730,10 +4709,10 @@ class DocAttrStep extends Step {
       attrs[name] = doc2.attrs[name];
     attrs[this.attr] = this.value;
     let updated = doc2.type.create(attrs, doc2.content, doc2.marks);
-    return StepResult.ok(updated);
+    return StepResult$1.ok(updated);
   }
   getMap() {
-    return StepMap.empty;
+    return StepMap$1.empty;
   }
   invert(doc2) {
     return new DocAttrStep(this.attr, doc2.attrs[this.attr]);
@@ -4749,18 +4728,18 @@ class DocAttrStep extends Step {
       throw new RangeError("Invalid input for DocAttrStep.fromJSON");
     return new DocAttrStep(json.attr, json.value);
   }
-}
-Step.jsonID("docAttr", DocAttrStep);
-let TransformError = class extends Error {
 };
-TransformError = function TransformError2(message) {
+Step$1.jsonID("docAttr", DocAttrStep$1);
+let TransformError$1 = class TransformError extends Error {
+};
+TransformError$1 = function TransformError2(message) {
   let err = Error.call(this, message);
   err.__proto__ = TransformError2.prototype;
   return err;
 };
-TransformError.prototype = Object.create(Error.prototype);
-TransformError.prototype.constructor = TransformError;
-TransformError.prototype.name = "TransformError";
+TransformError$1.prototype = Object.create(Error.prototype);
+TransformError$1.prototype.constructor = TransformError$1;
+TransformError$1.prototype.name = "TransformError";
 class Transform {
   /**
   Create a transform that starts with the given document.
@@ -4784,7 +4763,7 @@ class Transform {
   step(step) {
     let result = this.maybeStep(step);
     if (result.failed)
-      throw new TransformError(result.failed);
+      throw new TransformError$1(result.failed);
     return this;
   }
   /**
@@ -4818,7 +4797,7 @@ class Transform {
   given `slice`.
   */
   replace(from, to = from, slice = Slice.empty) {
-    let step = replaceStep(this.doc, from, to, slice);
+    let step = replaceStep$1(this.doc, from, to, slice);
     if (step)
       this.step(step);
     return this;
@@ -4936,21 +4915,21 @@ class Transform {
   to set attributes on the document itself.
   */
   setNodeAttribute(pos, attr2, value) {
-    this.step(new AttrStep(pos, attr2, value));
+    this.step(new AttrStep$1(pos, attr2, value));
     return this;
   }
   /**
   Set a single attribute on the document to a new value.
   */
   setDocAttribute(attr2, value) {
-    this.step(new DocAttrStep(attr2, value));
+    this.step(new DocAttrStep$1(attr2, value));
     return this;
   }
   /**
   Add a mark to the node at position `pos`.
   */
   addNodeMark(pos, mark) {
-    this.step(new AddNodeMarkStep(pos, mark));
+    this.step(new AddNodeMarkStep$1(pos, mark));
     return this;
   }
   /**
@@ -4966,7 +4945,7 @@ class Transform {
       if (!mark)
         return this;
     }
-    this.step(new RemoveNodeMarkStep(pos, mark));
+    this.step(new RemoveNodeMarkStep$1(pos, mark));
     return this;
   }
   /**
@@ -5438,7 +5417,7 @@ function selectionToInsertionEnd(tr, startLen, bias) {
   if (last < startLen)
     return;
   let step = tr.steps[last];
-  if (!(step instanceof ReplaceStep || step instanceof ReplaceAroundStep))
+  if (!(step instanceof ReplaceStep$1 || step instanceof ReplaceAroundStep$1))
     return;
   let map = tr.mapping.maps[last], end;
   map.forEach((_from, _to, _newFrom, newTo) => {
@@ -5910,6 +5889,1017 @@ function createKey(name) {
   keys[name] = 0;
   return name + "$";
 }
+const lower16 = 65535;
+const factor16 = Math.pow(2, 16);
+function makeRecover(index, offset) {
+  return index + offset * factor16;
+}
+function recoverIndex(value) {
+  return value & lower16;
+}
+function recoverOffset(value) {
+  return (value - (value & lower16)) / factor16;
+}
+const DEL_BEFORE = 1, DEL_AFTER = 2, DEL_ACROSS = 4, DEL_SIDE = 8;
+class MapResult2 {
+  /**
+  @internal
+  */
+  constructor(pos, delInfo, recover) {
+    this.pos = pos;
+    this.delInfo = delInfo;
+    this.recover = recover;
+  }
+  /**
+  Tells you whether the position was deleted, that is, whether the
+  step removed the token on the side queried (via the `assoc`)
+  argument from the document.
+  */
+  get deleted() {
+    return (this.delInfo & DEL_SIDE) > 0;
+  }
+  /**
+  Tells you whether the token before the mapped position was deleted.
+  */
+  get deletedBefore() {
+    return (this.delInfo & (DEL_BEFORE | DEL_ACROSS)) > 0;
+  }
+  /**
+  True when the token after the mapped position was deleted.
+  */
+  get deletedAfter() {
+    return (this.delInfo & (DEL_AFTER | DEL_ACROSS)) > 0;
+  }
+  /**
+  Tells whether any of the steps mapped through deletes across the
+  position (including both the token before and after the
+  position).
+  */
+  get deletedAcross() {
+    return (this.delInfo & DEL_ACROSS) > 0;
+  }
+}
+class StepMap2 {
+  /**
+  Create a position map. The modifications to the document are
+  represented as an array of numbers, in which each group of three
+  represents a modified chunk as `[start, oldSize, newSize]`.
+  */
+  constructor(ranges, inverted = false) {
+    this.ranges = ranges;
+    this.inverted = inverted;
+    if (!ranges.length && StepMap2.empty)
+      return StepMap2.empty;
+  }
+  /**
+  @internal
+  */
+  recover(value) {
+    let diff2 = 0, index = recoverIndex(value);
+    if (!this.inverted)
+      for (let i = 0; i < index; i++)
+        diff2 += this.ranges[i * 3 + 2] - this.ranges[i * 3 + 1];
+    return this.ranges[index * 3] + diff2 + recoverOffset(value);
+  }
+  mapResult(pos, assoc = 1) {
+    return this._map(pos, assoc, false);
+  }
+  map(pos, assoc = 1) {
+    return this._map(pos, assoc, true);
+  }
+  /**
+  @internal
+  */
+  _map(pos, assoc, simple) {
+    let diff2 = 0, oldIndex = this.inverted ? 2 : 1, newIndex = this.inverted ? 1 : 2;
+    for (let i = 0; i < this.ranges.length; i += 3) {
+      let start = this.ranges[i] - (this.inverted ? diff2 : 0);
+      if (start > pos)
+        break;
+      let oldSize = this.ranges[i + oldIndex], newSize = this.ranges[i + newIndex], end = start + oldSize;
+      if (pos <= end) {
+        let side = !oldSize ? assoc : pos == start ? -1 : pos == end ? 1 : assoc;
+        let result = start + diff2 + (side < 0 ? 0 : newSize);
+        if (simple)
+          return result;
+        let recover = pos == (assoc < 0 ? start : end) ? null : makeRecover(i / 3, pos - start);
+        let del2 = pos == start ? DEL_AFTER : pos == end ? DEL_BEFORE : DEL_ACROSS;
+        if (assoc < 0 ? pos != start : pos != end)
+          del2 |= DEL_SIDE;
+        return new MapResult2(result, del2, recover);
+      }
+      diff2 += newSize - oldSize;
+    }
+    return simple ? pos + diff2 : new MapResult2(pos + diff2, 0, null);
+  }
+  /**
+  @internal
+  */
+  touches(pos, recover) {
+    let diff2 = 0, index = recoverIndex(recover);
+    let oldIndex = this.inverted ? 2 : 1, newIndex = this.inverted ? 1 : 2;
+    for (let i = 0; i < this.ranges.length; i += 3) {
+      let start = this.ranges[i] - (this.inverted ? diff2 : 0);
+      if (start > pos)
+        break;
+      let oldSize = this.ranges[i + oldIndex], end = start + oldSize;
+      if (pos <= end && i == index * 3)
+        return true;
+      diff2 += this.ranges[i + newIndex] - oldSize;
+    }
+    return false;
+  }
+  /**
+  Calls the given function on each of the changed ranges included in
+  this map.
+  */
+  forEach(f) {
+    let oldIndex = this.inverted ? 2 : 1, newIndex = this.inverted ? 1 : 2;
+    for (let i = 0, diff2 = 0; i < this.ranges.length; i += 3) {
+      let start = this.ranges[i], oldStart = start - (this.inverted ? diff2 : 0), newStart = start + (this.inverted ? 0 : diff2);
+      let oldSize = this.ranges[i + oldIndex], newSize = this.ranges[i + newIndex];
+      f(oldStart, oldStart + oldSize, newStart, newStart + newSize);
+      diff2 += newSize - oldSize;
+    }
+  }
+  /**
+  Create an inverted version of this map. The result can be used to
+  map positions in the post-step document to the pre-step document.
+  */
+  invert() {
+    return new StepMap2(this.ranges, !this.inverted);
+  }
+  /**
+  @internal
+  */
+  toString() {
+    return (this.inverted ? "-" : "") + JSON.stringify(this.ranges);
+  }
+  /**
+  Create a map that moves all positions by offset `n` (which may be
+  negative). This can be useful when applying steps meant for a
+  sub-document to a larger document, or vice-versa.
+  */
+  static offset(n) {
+    return n == 0 ? StepMap2.empty : new StepMap2(n < 0 ? [0, -n, 0] : [0, 0, n]);
+  }
+}
+StepMap2.empty = new StepMap2([]);
+const stepsByID = /* @__PURE__ */ Object.create(null);
+class Step2 {
+  /**
+  Get the step map that represents the changes made by this step,
+  and which can be used to transform between positions in the old
+  and the new document.
+  */
+  getMap() {
+    return StepMap2.empty;
+  }
+  /**
+  Try to merge this step with another one, to be applied directly
+  after it. Returns the merged step when possible, null if the
+  steps can't be merged.
+  */
+  merge(other) {
+    return null;
+  }
+  /**
+  Deserialize a step from its JSON representation. Will call
+  through to the step class' own implementation of this method.
+  */
+  static fromJSON(schema2, json) {
+    if (!json || !json.stepType)
+      throw new RangeError("Invalid input for Step.fromJSON");
+    let type = stepsByID[json.stepType];
+    if (!type)
+      throw new RangeError(`No step type ${json.stepType} defined`);
+    return type.fromJSON(schema2, json);
+  }
+  /**
+  To be able to serialize steps to JSON, each step needs a string
+  ID to attach to its JSON representation. Use this method to
+  register an ID for your step classes. Try to pick something
+  that's unlikely to clash with steps from other modules.
+  */
+  static jsonID(id, stepClass) {
+    if (id in stepsByID)
+      throw new RangeError("Duplicate use of step JSON ID " + id);
+    stepsByID[id] = stepClass;
+    stepClass.prototype.jsonID = id;
+    return stepClass;
+  }
+}
+class StepResult2 {
+  /**
+  @internal
+  */
+  constructor(doc2, failed) {
+    this.doc = doc2;
+    this.failed = failed;
+  }
+  /**
+  Create a successful step result.
+  */
+  static ok(doc2) {
+    return new StepResult2(doc2, null);
+  }
+  /**
+  Create a failed step result.
+  */
+  static fail(message) {
+    return new StepResult2(null, message);
+  }
+  /**
+  Call [`Node.replace`](https://prosemirror.net/docs/ref/#model.Node.replace) with the given
+  arguments. Create a successful result if it succeeds, and a
+  failed one if it throws a `ReplaceError`.
+  */
+  static fromReplace(doc2, from, to, slice) {
+    try {
+      return StepResult2.ok(doc2.replace(from, to, slice));
+    } catch (e) {
+      if (e instanceof ReplaceError)
+        return StepResult2.fail(e.message);
+      throw e;
+    }
+  }
+}
+function mapFragment(fragment, f, parent) {
+  let mapped = [];
+  for (let i = 0; i < fragment.childCount; i++) {
+    let child = fragment.child(i);
+    if (child.content.size)
+      child = child.copy(mapFragment(child.content, f, child));
+    if (child.isInline)
+      child = f(child, parent, i);
+    mapped.push(child);
+  }
+  return Fragment.fromArray(mapped);
+}
+class AddMarkStep2 extends Step2 {
+  /**
+  Create a mark step.
+  */
+  constructor(from, to, mark) {
+    super();
+    this.from = from;
+    this.to = to;
+    this.mark = mark;
+  }
+  apply(doc2) {
+    let oldSlice = doc2.slice(this.from, this.to), $from = doc2.resolve(this.from);
+    let parent = $from.node($from.sharedDepth(this.to));
+    let slice = new Slice(mapFragment(oldSlice.content, (node, parent2) => {
+      if (!node.isAtom || !parent2.type.allowsMarkType(this.mark.type))
+        return node;
+      return node.mark(this.mark.addToSet(node.marks));
+    }, parent), oldSlice.openStart, oldSlice.openEnd);
+    return StepResult2.fromReplace(doc2, this.from, this.to, slice);
+  }
+  invert() {
+    return new RemoveMarkStep2(this.from, this.to, this.mark);
+  }
+  map(mapping) {
+    let from = mapping.mapResult(this.from, 1), to = mapping.mapResult(this.to, -1);
+    if (from.deleted && to.deleted || from.pos >= to.pos)
+      return null;
+    return new AddMarkStep2(from.pos, to.pos, this.mark);
+  }
+  merge(other) {
+    if (other instanceof AddMarkStep2 && other.mark.eq(this.mark) && this.from <= other.to && this.to >= other.from)
+      return new AddMarkStep2(Math.min(this.from, other.from), Math.max(this.to, other.to), this.mark);
+    return null;
+  }
+  toJSON() {
+    return {
+      stepType: "addMark",
+      mark: this.mark.toJSON(),
+      from: this.from,
+      to: this.to
+    };
+  }
+  /**
+  @internal
+  */
+  static fromJSON(schema2, json) {
+    if (typeof json.from != "number" || typeof json.to != "number")
+      throw new RangeError("Invalid input for AddMarkStep.fromJSON");
+    return new AddMarkStep2(json.from, json.to, schema2.markFromJSON(json.mark));
+  }
+}
+Step2.jsonID("addMark", AddMarkStep2);
+class RemoveMarkStep2 extends Step2 {
+  /**
+  Create a mark-removing step.
+  */
+  constructor(from, to, mark) {
+    super();
+    this.from = from;
+    this.to = to;
+    this.mark = mark;
+  }
+  apply(doc2) {
+    let oldSlice = doc2.slice(this.from, this.to);
+    let slice = new Slice(mapFragment(oldSlice.content, (node) => {
+      return node.mark(this.mark.removeFromSet(node.marks));
+    }, doc2), oldSlice.openStart, oldSlice.openEnd);
+    return StepResult2.fromReplace(doc2, this.from, this.to, slice);
+  }
+  invert() {
+    return new AddMarkStep2(this.from, this.to, this.mark);
+  }
+  map(mapping) {
+    let from = mapping.mapResult(this.from, 1), to = mapping.mapResult(this.to, -1);
+    if (from.deleted && to.deleted || from.pos >= to.pos)
+      return null;
+    return new RemoveMarkStep2(from.pos, to.pos, this.mark);
+  }
+  merge(other) {
+    if (other instanceof RemoveMarkStep2 && other.mark.eq(this.mark) && this.from <= other.to && this.to >= other.from)
+      return new RemoveMarkStep2(Math.min(this.from, other.from), Math.max(this.to, other.to), this.mark);
+    return null;
+  }
+  toJSON() {
+    return {
+      stepType: "removeMark",
+      mark: this.mark.toJSON(),
+      from: this.from,
+      to: this.to
+    };
+  }
+  /**
+  @internal
+  */
+  static fromJSON(schema2, json) {
+    if (typeof json.from != "number" || typeof json.to != "number")
+      throw new RangeError("Invalid input for RemoveMarkStep.fromJSON");
+    return new RemoveMarkStep2(json.from, json.to, schema2.markFromJSON(json.mark));
+  }
+}
+Step2.jsonID("removeMark", RemoveMarkStep2);
+class AddNodeMarkStep2 extends Step2 {
+  /**
+  Create a node mark step.
+  */
+  constructor(pos, mark) {
+    super();
+    this.pos = pos;
+    this.mark = mark;
+  }
+  apply(doc2) {
+    let node = doc2.nodeAt(this.pos);
+    if (!node)
+      return StepResult2.fail("No node at mark step's position");
+    let updated = node.type.create(node.attrs, null, this.mark.addToSet(node.marks));
+    return StepResult2.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
+  }
+  invert(doc2) {
+    let node = doc2.nodeAt(this.pos);
+    if (node) {
+      let newSet = this.mark.addToSet(node.marks);
+      if (newSet.length == node.marks.length) {
+        for (let i = 0; i < node.marks.length; i++)
+          if (!node.marks[i].isInSet(newSet))
+            return new AddNodeMarkStep2(this.pos, node.marks[i]);
+        return new AddNodeMarkStep2(this.pos, this.mark);
+      }
+    }
+    return new RemoveNodeMarkStep2(this.pos, this.mark);
+  }
+  map(mapping) {
+    let pos = mapping.mapResult(this.pos, 1);
+    return pos.deletedAfter ? null : new AddNodeMarkStep2(pos.pos, this.mark);
+  }
+  toJSON() {
+    return { stepType: "addNodeMark", pos: this.pos, mark: this.mark.toJSON() };
+  }
+  /**
+  @internal
+  */
+  static fromJSON(schema2, json) {
+    if (typeof json.pos != "number")
+      throw new RangeError("Invalid input for AddNodeMarkStep.fromJSON");
+    return new AddNodeMarkStep2(json.pos, schema2.markFromJSON(json.mark));
+  }
+}
+Step2.jsonID("addNodeMark", AddNodeMarkStep2);
+class RemoveNodeMarkStep2 extends Step2 {
+  /**
+  Create a mark-removing step.
+  */
+  constructor(pos, mark) {
+    super();
+    this.pos = pos;
+    this.mark = mark;
+  }
+  apply(doc2) {
+    let node = doc2.nodeAt(this.pos);
+    if (!node)
+      return StepResult2.fail("No node at mark step's position");
+    let updated = node.type.create(node.attrs, null, this.mark.removeFromSet(node.marks));
+    return StepResult2.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
+  }
+  invert(doc2) {
+    let node = doc2.nodeAt(this.pos);
+    if (!node || !this.mark.isInSet(node.marks))
+      return this;
+    return new AddNodeMarkStep2(this.pos, this.mark);
+  }
+  map(mapping) {
+    let pos = mapping.mapResult(this.pos, 1);
+    return pos.deletedAfter ? null : new RemoveNodeMarkStep2(pos.pos, this.mark);
+  }
+  toJSON() {
+    return { stepType: "removeNodeMark", pos: this.pos, mark: this.mark.toJSON() };
+  }
+  /**
+  @internal
+  */
+  static fromJSON(schema2, json) {
+    if (typeof json.pos != "number")
+      throw new RangeError("Invalid input for RemoveNodeMarkStep.fromJSON");
+    return new RemoveNodeMarkStep2(json.pos, schema2.markFromJSON(json.mark));
+  }
+}
+Step2.jsonID("removeNodeMark", RemoveNodeMarkStep2);
+class ReplaceStep2 extends Step2 {
+  /**
+  The given `slice` should fit the 'gap' between `from` and
+  `to`—the depths must line up, and the surrounding nodes must be
+  able to be joined with the open sides of the slice. When
+  `structure` is true, the step will fail if the content between
+  from and to is not just a sequence of closing and then opening
+  tokens (this is to guard against rebased replace steps
+  overwriting something they weren't supposed to).
+  */
+  constructor(from, to, slice, structure = false) {
+    super();
+    this.from = from;
+    this.to = to;
+    this.slice = slice;
+    this.structure = structure;
+  }
+  apply(doc2) {
+    if (this.structure && contentBetween(doc2, this.from, this.to))
+      return StepResult2.fail("Structure replace would overwrite content");
+    return StepResult2.fromReplace(doc2, this.from, this.to, this.slice);
+  }
+  getMap() {
+    return new StepMap2([this.from, this.to - this.from, this.slice.size]);
+  }
+  invert(doc2) {
+    return new ReplaceStep2(this.from, this.from + this.slice.size, doc2.slice(this.from, this.to));
+  }
+  map(mapping) {
+    let from = mapping.mapResult(this.from, 1), to = mapping.mapResult(this.to, -1);
+    if (from.deletedAcross && to.deletedAcross)
+      return null;
+    return new ReplaceStep2(from.pos, Math.max(from.pos, to.pos), this.slice);
+  }
+  merge(other) {
+    if (!(other instanceof ReplaceStep2) || other.structure || this.structure)
+      return null;
+    if (this.from + this.slice.size == other.from && !this.slice.openEnd && !other.slice.openStart) {
+      let slice = this.slice.size + other.slice.size == 0 ? Slice.empty : new Slice(this.slice.content.append(other.slice.content), this.slice.openStart, other.slice.openEnd);
+      return new ReplaceStep2(this.from, this.to + (other.to - other.from), slice, this.structure);
+    } else if (other.to == this.from && !this.slice.openStart && !other.slice.openEnd) {
+      let slice = this.slice.size + other.slice.size == 0 ? Slice.empty : new Slice(other.slice.content.append(this.slice.content), other.slice.openStart, this.slice.openEnd);
+      return new ReplaceStep2(other.from, this.to, slice, this.structure);
+    } else {
+      return null;
+    }
+  }
+  toJSON() {
+    let json = { stepType: "replace", from: this.from, to: this.to };
+    if (this.slice.size)
+      json.slice = this.slice.toJSON();
+    if (this.structure)
+      json.structure = true;
+    return json;
+  }
+  /**
+  @internal
+  */
+  static fromJSON(schema2, json) {
+    if (typeof json.from != "number" || typeof json.to != "number")
+      throw new RangeError("Invalid input for ReplaceStep.fromJSON");
+    return new ReplaceStep2(json.from, json.to, Slice.fromJSON(schema2, json.slice), !!json.structure);
+  }
+}
+Step2.jsonID("replace", ReplaceStep2);
+class ReplaceAroundStep2 extends Step2 {
+  /**
+  Create a replace-around step with the given range and gap.
+  `insert` should be the point in the slice into which the content
+  of the gap should be moved. `structure` has the same meaning as
+  it has in the [`ReplaceStep`](https://prosemirror.net/docs/ref/#transform.ReplaceStep) class.
+  */
+  constructor(from, to, gapFrom, gapTo, slice, insert2, structure = false) {
+    super();
+    this.from = from;
+    this.to = to;
+    this.gapFrom = gapFrom;
+    this.gapTo = gapTo;
+    this.slice = slice;
+    this.insert = insert2;
+    this.structure = structure;
+  }
+  apply(doc2) {
+    if (this.structure && (contentBetween(doc2, this.from, this.gapFrom) || contentBetween(doc2, this.gapTo, this.to)))
+      return StepResult2.fail("Structure gap-replace would overwrite content");
+    let gap = doc2.slice(this.gapFrom, this.gapTo);
+    if (gap.openStart || gap.openEnd)
+      return StepResult2.fail("Gap is not a flat range");
+    let inserted = this.slice.insertAt(this.insert, gap.content);
+    if (!inserted)
+      return StepResult2.fail("Content does not fit in gap");
+    return StepResult2.fromReplace(doc2, this.from, this.to, inserted);
+  }
+  getMap() {
+    return new StepMap2([
+      this.from,
+      this.gapFrom - this.from,
+      this.insert,
+      this.gapTo,
+      this.to - this.gapTo,
+      this.slice.size - this.insert
+    ]);
+  }
+  invert(doc2) {
+    let gap = this.gapTo - this.gapFrom;
+    return new ReplaceAroundStep2(this.from, this.from + this.slice.size + gap, this.from + this.insert, this.from + this.insert + gap, doc2.slice(this.from, this.to).removeBetween(this.gapFrom - this.from, this.gapTo - this.from), this.gapFrom - this.from, this.structure);
+  }
+  map(mapping) {
+    let from = mapping.mapResult(this.from, 1), to = mapping.mapResult(this.to, -1);
+    let gapFrom = this.from == this.gapFrom ? from.pos : mapping.map(this.gapFrom, -1);
+    let gapTo = this.to == this.gapTo ? to.pos : mapping.map(this.gapTo, 1);
+    if (from.deletedAcross && to.deletedAcross || gapFrom < from.pos || gapTo > to.pos)
+      return null;
+    return new ReplaceAroundStep2(from.pos, to.pos, gapFrom, gapTo, this.slice, this.insert, this.structure);
+  }
+  toJSON() {
+    let json = {
+      stepType: "replaceAround",
+      from: this.from,
+      to: this.to,
+      gapFrom: this.gapFrom,
+      gapTo: this.gapTo,
+      insert: this.insert
+    };
+    if (this.slice.size)
+      json.slice = this.slice.toJSON();
+    if (this.structure)
+      json.structure = true;
+    return json;
+  }
+  /**
+  @internal
+  */
+  static fromJSON(schema2, json) {
+    if (typeof json.from != "number" || typeof json.to != "number" || typeof json.gapFrom != "number" || typeof json.gapTo != "number" || typeof json.insert != "number")
+      throw new RangeError("Invalid input for ReplaceAroundStep.fromJSON");
+    return new ReplaceAroundStep2(json.from, json.to, json.gapFrom, json.gapTo, Slice.fromJSON(schema2, json.slice), json.insert, !!json.structure);
+  }
+}
+Step2.jsonID("replaceAround", ReplaceAroundStep2);
+function contentBetween(doc2, from, to) {
+  let $from = doc2.resolve(from), dist = to - from, depth = $from.depth;
+  while (dist > 0 && depth > 0 && $from.indexAfter(depth) == $from.node(depth).childCount) {
+    depth--;
+    dist--;
+  }
+  if (dist > 0) {
+    let next = $from.node(depth).maybeChild($from.indexAfter(depth));
+    while (dist > 0) {
+      if (!next || next.isLeaf)
+        return true;
+      next = next.firstChild;
+      dist--;
+    }
+  }
+  return false;
+}
+function canCut(node, start, end) {
+  return (start == 0 || node.canReplace(start, node.childCount)) && (end == node.childCount || node.canReplace(0, end));
+}
+function liftTarget(range) {
+  let parent = range.parent;
+  let content = parent.content.cutByIndex(range.startIndex, range.endIndex);
+  for (let depth = range.depth; ; --depth) {
+    let node = range.$from.node(depth);
+    let index = range.$from.index(depth), endIndex = range.$to.indexAfter(depth);
+    if (depth < range.depth && node.canReplace(index, endIndex, content))
+      return depth;
+    if (depth == 0 || node.type.spec.isolating || !canCut(node, index, endIndex))
+      break;
+  }
+  return null;
+}
+function canSplit(doc2, pos, depth = 1, typesAfter) {
+  let $pos = doc2.resolve(pos), base2 = $pos.depth - depth;
+  let innerType = typesAfter && typesAfter[typesAfter.length - 1] || $pos.parent;
+  if (base2 < 0 || $pos.parent.type.spec.isolating || !$pos.parent.canReplace($pos.index(), $pos.parent.childCount) || !innerType.type.validContent($pos.parent.content.cutByIndex($pos.index(), $pos.parent.childCount)))
+    return false;
+  for (let d = $pos.depth - 1, i = depth - 2; d > base2; d--, i--) {
+    let node = $pos.node(d), index2 = $pos.index(d);
+    if (node.type.spec.isolating)
+      return false;
+    let rest = node.content.cutByIndex(index2, node.childCount);
+    let overrideChild = typesAfter && typesAfter[i + 1];
+    if (overrideChild)
+      rest = rest.replaceChild(0, overrideChild.type.create(overrideChild.attrs));
+    let after = typesAfter && typesAfter[i] || node;
+    if (!node.canReplace(index2 + 1, node.childCount) || !after.type.validContent(rest))
+      return false;
+  }
+  let index = $pos.indexAfter(base2);
+  let baseType = typesAfter && typesAfter[0];
+  return $pos.node(base2).canReplaceWith(index, index, baseType ? baseType.type : $pos.node(base2 + 1).type);
+}
+function canJoin(doc2, pos) {
+  let $pos = doc2.resolve(pos), index = $pos.index();
+  return joinable($pos.nodeBefore, $pos.nodeAfter) && $pos.parent.canReplace(index, index + 1);
+}
+function canAppendWithSubstitutedLinebreaks(a, b) {
+  if (!b.content.size)
+    a.type.compatibleContent(b.type);
+  let match = a.contentMatchAt(a.childCount);
+  let { linebreakReplacement } = a.type.schema;
+  for (let i = 0; i < b.childCount; i++) {
+    let child = b.child(i);
+    let type = child.type == linebreakReplacement ? a.type.schema.nodes.text : child.type;
+    match = match.matchType(type);
+    if (!match)
+      return false;
+    if (!a.type.allowsMarks(child.marks))
+      return false;
+  }
+  return match.validEnd;
+}
+function joinable(a, b) {
+  return !!(a && b && !a.isLeaf && canAppendWithSubstitutedLinebreaks(a, b));
+}
+function dropPoint(doc2, pos, slice) {
+  let $pos = doc2.resolve(pos);
+  if (!slice.content.size)
+    return pos;
+  let content = slice.content;
+  for (let i = 0; i < slice.openStart; i++)
+    content = content.firstChild.content;
+  for (let pass = 1; pass <= (slice.openStart == 0 && slice.size ? 2 : 1); pass++) {
+    for (let d = $pos.depth; d >= 0; d--) {
+      let bias = d == $pos.depth ? 0 : $pos.pos <= ($pos.start(d + 1) + $pos.end(d + 1)) / 2 ? -1 : 1;
+      let insertPos = $pos.index(d) + (bias > 0 ? 1 : 0);
+      let parent = $pos.node(d), fits = false;
+      if (pass == 1) {
+        fits = parent.canReplace(insertPos, insertPos, content);
+      } else {
+        let wrapping = parent.contentMatchAt(insertPos).findWrapping(content.firstChild.type);
+        fits = wrapping && parent.canReplaceWith(insertPos, insertPos, wrapping[0]);
+      }
+      if (fits)
+        return bias == 0 ? $pos.pos : bias < 0 ? $pos.before(d + 1) : $pos.after(d + 1);
+    }
+  }
+  return null;
+}
+function replaceStep(doc2, from, to = from, slice = Slice.empty) {
+  if (from == to && !slice.size)
+    return null;
+  let $from = doc2.resolve(from), $to = doc2.resolve(to);
+  if (fitsTrivially($from, $to, slice))
+    return new ReplaceStep2(from, to, slice);
+  return new Fitter2($from, $to, slice).fit();
+}
+function fitsTrivially($from, $to, slice) {
+  return !slice.openStart && !slice.openEnd && $from.start() == $to.start() && $from.parent.canReplace($from.index(), $to.index(), slice.content);
+}
+class Fitter2 {
+  constructor($from, $to, unplaced) {
+    this.$from = $from;
+    this.$to = $to;
+    this.unplaced = unplaced;
+    this.frontier = [];
+    this.placed = Fragment.empty;
+    for (let i = 0; i <= $from.depth; i++) {
+      let node = $from.node(i);
+      this.frontier.push({
+        type: node.type,
+        match: node.contentMatchAt($from.indexAfter(i))
+      });
+    }
+    for (let i = $from.depth; i > 0; i--)
+      this.placed = Fragment.from($from.node(i).copy(this.placed));
+  }
+  get depth() {
+    return this.frontier.length - 1;
+  }
+  fit() {
+    while (this.unplaced.size) {
+      let fit = this.findFittable();
+      if (fit)
+        this.placeNodes(fit);
+      else
+        this.openMore() || this.dropNode();
+    }
+    let moveInline = this.mustMoveInline(), placedSize = this.placed.size - this.depth - this.$from.depth;
+    let $from = this.$from, $to = this.close(moveInline < 0 ? this.$to : $from.doc.resolve(moveInline));
+    if (!$to)
+      return null;
+    let content = this.placed, openStart = $from.depth, openEnd = $to.depth;
+    while (openStart && openEnd && content.childCount == 1) {
+      content = content.firstChild.content;
+      openStart--;
+      openEnd--;
+    }
+    let slice = new Slice(content, openStart, openEnd);
+    if (moveInline > -1)
+      return new ReplaceAroundStep2($from.pos, moveInline, this.$to.pos, this.$to.end(), slice, placedSize);
+    if (slice.size || $from.pos != this.$to.pos)
+      return new ReplaceStep2($from.pos, $to.pos, slice);
+    return null;
+  }
+  // Find a position on the start spine of `this.unplaced` that has
+  // content that can be moved somewhere on the frontier. Returns two
+  // depths, one for the slice and one for the frontier.
+  findFittable() {
+    let startDepth = this.unplaced.openStart;
+    for (let cur = this.unplaced.content, d = 0, openEnd = this.unplaced.openEnd; d < startDepth; d++) {
+      let node = cur.firstChild;
+      if (cur.childCount > 1)
+        openEnd = 0;
+      if (node.type.spec.isolating && openEnd <= d) {
+        startDepth = d;
+        break;
+      }
+      cur = node.content;
+    }
+    for (let pass = 1; pass <= 2; pass++) {
+      for (let sliceDepth = pass == 1 ? startDepth : this.unplaced.openStart; sliceDepth >= 0; sliceDepth--) {
+        let fragment, parent = null;
+        if (sliceDepth) {
+          parent = contentAt(this.unplaced.content, sliceDepth - 1).firstChild;
+          fragment = parent.content;
+        } else {
+          fragment = this.unplaced.content;
+        }
+        let first = fragment.firstChild;
+        for (let frontierDepth = this.depth; frontierDepth >= 0; frontierDepth--) {
+          let { type, match } = this.frontier[frontierDepth], wrap2, inject = null;
+          if (pass == 1 && (first ? match.matchType(first.type) || (inject = match.fillBefore(Fragment.from(first), false)) : parent && type.compatibleContent(parent.type)))
+            return { sliceDepth, frontierDepth, parent, inject };
+          else if (pass == 2 && first && (wrap2 = match.findWrapping(first.type)))
+            return { sliceDepth, frontierDepth, parent, wrap: wrap2 };
+          if (parent && match.matchType(parent.type))
+            break;
+        }
+      }
+    }
+  }
+  openMore() {
+    let { content, openStart, openEnd } = this.unplaced;
+    let inner = contentAt(content, openStart);
+    if (!inner.childCount || inner.firstChild.isLeaf)
+      return false;
+    this.unplaced = new Slice(content, openStart + 1, Math.max(openEnd, inner.size + openStart >= content.size - openEnd ? openStart + 1 : 0));
+    return true;
+  }
+  dropNode() {
+    let { content, openStart, openEnd } = this.unplaced;
+    let inner = contentAt(content, openStart);
+    if (inner.childCount <= 1 && openStart > 0) {
+      let openAtEnd = content.size - openStart <= openStart + inner.size;
+      this.unplaced = new Slice(dropFromFragment(content, openStart - 1, 1), openStart - 1, openAtEnd ? openStart - 1 : openEnd);
+    } else {
+      this.unplaced = new Slice(dropFromFragment(content, openStart, 1), openStart, openEnd);
+    }
+  }
+  // Move content from the unplaced slice at `sliceDepth` to the
+  // frontier node at `frontierDepth`. Close that frontier node when
+  // applicable.
+  placeNodes({ sliceDepth, frontierDepth, parent, inject, wrap: wrap2 }) {
+    while (this.depth > frontierDepth)
+      this.closeFrontierNode();
+    if (wrap2)
+      for (let i = 0; i < wrap2.length; i++)
+        this.openFrontierNode(wrap2[i]);
+    let slice = this.unplaced, fragment = parent ? parent.content : slice.content;
+    let openStart = slice.openStart - sliceDepth;
+    let taken = 0, add = [];
+    let { match, type } = this.frontier[frontierDepth];
+    if (inject) {
+      for (let i = 0; i < inject.childCount; i++)
+        add.push(inject.child(i));
+      match = match.matchFragment(inject);
+    }
+    let openEndCount = fragment.size + sliceDepth - (slice.content.size - slice.openEnd);
+    while (taken < fragment.childCount) {
+      let next = fragment.child(taken), matches2 = match.matchType(next.type);
+      if (!matches2)
+        break;
+      taken++;
+      if (taken > 1 || openStart == 0 || next.content.size) {
+        match = matches2;
+        add.push(closeNodeStart(next.mark(type.allowedMarks(next.marks)), taken == 1 ? openStart : 0, taken == fragment.childCount ? openEndCount : -1));
+      }
+    }
+    let toEnd = taken == fragment.childCount;
+    if (!toEnd)
+      openEndCount = -1;
+    this.placed = addToFragment(this.placed, frontierDepth, Fragment.from(add));
+    this.frontier[frontierDepth].match = match;
+    if (toEnd && openEndCount < 0 && parent && parent.type == this.frontier[this.depth].type && this.frontier.length > 1)
+      this.closeFrontierNode();
+    for (let i = 0, cur = fragment; i < openEndCount; i++) {
+      let node = cur.lastChild;
+      this.frontier.push({ type: node.type, match: node.contentMatchAt(node.childCount) });
+      cur = node.content;
+    }
+    this.unplaced = !toEnd ? new Slice(dropFromFragment(slice.content, sliceDepth, taken), slice.openStart, slice.openEnd) : sliceDepth == 0 ? Slice.empty : new Slice(dropFromFragment(slice.content, sliceDepth - 1, 1), sliceDepth - 1, openEndCount < 0 ? slice.openEnd : sliceDepth - 1);
+  }
+  mustMoveInline() {
+    if (!this.$to.parent.isTextblock)
+      return -1;
+    let top = this.frontier[this.depth], level;
+    if (!top.type.isTextblock || !contentAfterFits(this.$to, this.$to.depth, top.type, top.match, false) || this.$to.depth == this.depth && (level = this.findCloseLevel(this.$to)) && level.depth == this.depth)
+      return -1;
+    let { depth } = this.$to, after = this.$to.after(depth);
+    while (depth > 1 && after == this.$to.end(--depth))
+      ++after;
+    return after;
+  }
+  findCloseLevel($to) {
+    scan: for (let i = Math.min(this.depth, $to.depth); i >= 0; i--) {
+      let { match, type } = this.frontier[i];
+      let dropInner = i < $to.depth && $to.end(i + 1) == $to.pos + ($to.depth - (i + 1));
+      let fit = contentAfterFits($to, i, type, match, dropInner);
+      if (!fit)
+        continue;
+      for (let d = i - 1; d >= 0; d--) {
+        let { match: match2, type: type2 } = this.frontier[d];
+        let matches2 = contentAfterFits($to, d, type2, match2, true);
+        if (!matches2 || matches2.childCount)
+          continue scan;
+      }
+      return { depth: i, fit, move: dropInner ? $to.doc.resolve($to.after(i + 1)) : $to };
+    }
+  }
+  close($to) {
+    let close2 = this.findCloseLevel($to);
+    if (!close2)
+      return null;
+    while (this.depth > close2.depth)
+      this.closeFrontierNode();
+    if (close2.fit.childCount)
+      this.placed = addToFragment(this.placed, close2.depth, close2.fit);
+    $to = close2.move;
+    for (let d = close2.depth + 1; d <= $to.depth; d++) {
+      let node = $to.node(d), add = node.type.contentMatch.fillBefore(node.content, true, $to.index(d));
+      this.openFrontierNode(node.type, node.attrs, add);
+    }
+    return $to;
+  }
+  openFrontierNode(type, attrs = null, content) {
+    let top = this.frontier[this.depth];
+    top.match = top.match.matchType(type);
+    this.placed = addToFragment(this.placed, this.depth, Fragment.from(type.create(attrs, content)));
+    this.frontier.push({ type, match: type.contentMatch });
+  }
+  closeFrontierNode() {
+    let open = this.frontier.pop();
+    let add = open.match.fillBefore(Fragment.empty, true);
+    if (add.childCount)
+      this.placed = addToFragment(this.placed, this.frontier.length, add);
+  }
+}
+function dropFromFragment(fragment, depth, count) {
+  if (depth == 0)
+    return fragment.cutByIndex(count, fragment.childCount);
+  return fragment.replaceChild(0, fragment.firstChild.copy(dropFromFragment(fragment.firstChild.content, depth - 1, count)));
+}
+function addToFragment(fragment, depth, content) {
+  if (depth == 0)
+    return fragment.append(content);
+  return fragment.replaceChild(fragment.childCount - 1, fragment.lastChild.copy(addToFragment(fragment.lastChild.content, depth - 1, content)));
+}
+function contentAt(fragment, depth) {
+  for (let i = 0; i < depth; i++)
+    fragment = fragment.firstChild.content;
+  return fragment;
+}
+function closeNodeStart(node, openStart, openEnd) {
+  if (openStart <= 0)
+    return node;
+  let frag = node.content;
+  if (openStart > 1)
+    frag = frag.replaceChild(0, closeNodeStart(frag.firstChild, openStart - 1, frag.childCount == 1 ? openEnd - 1 : 0));
+  if (openStart > 0) {
+    frag = node.type.contentMatch.fillBefore(frag).append(frag);
+    if (openEnd <= 0)
+      frag = frag.append(node.type.contentMatch.matchFragment(frag).fillBefore(Fragment.empty, true));
+  }
+  return node.copy(frag);
+}
+function contentAfterFits($to, depth, type, match, open) {
+  let node = $to.node(depth), index = open ? $to.indexAfter(depth) : $to.index(depth);
+  if (index == node.childCount && !type.compatibleContent(node.type))
+    return null;
+  let fit = match.fillBefore(node.content, true, index);
+  return fit && !invalidMarks(type, node.content, index) ? fit : null;
+}
+function invalidMarks(type, fragment, start) {
+  for (let i = start; i < fragment.childCount; i++)
+    if (!type.allowsMarks(fragment.child(i).marks))
+      return true;
+  return false;
+}
+class AttrStep2 extends Step2 {
+  /**
+  Construct an attribute step.
+  */
+  constructor(pos, attr2, value) {
+    super();
+    this.pos = pos;
+    this.attr = attr2;
+    this.value = value;
+  }
+  apply(doc2) {
+    let node = doc2.nodeAt(this.pos);
+    if (!node)
+      return StepResult2.fail("No node at attribute step's position");
+    let attrs = /* @__PURE__ */ Object.create(null);
+    for (let name in node.attrs)
+      attrs[name] = node.attrs[name];
+    attrs[this.attr] = this.value;
+    let updated = node.type.create(attrs, null, node.marks);
+    return StepResult2.fromReplace(doc2, this.pos, this.pos + 1, new Slice(Fragment.from(updated), 0, node.isLeaf ? 0 : 1));
+  }
+  getMap() {
+    return StepMap2.empty;
+  }
+  invert(doc2) {
+    return new AttrStep2(this.pos, this.attr, doc2.nodeAt(this.pos).attrs[this.attr]);
+  }
+  map(mapping) {
+    let pos = mapping.mapResult(this.pos, 1);
+    return pos.deletedAfter ? null : new AttrStep2(pos.pos, this.attr, this.value);
+  }
+  toJSON() {
+    return { stepType: "attr", pos: this.pos, attr: this.attr, value: this.value };
+  }
+  static fromJSON(schema2, json) {
+    if (typeof json.pos != "number" || typeof json.attr != "string")
+      throw new RangeError("Invalid input for AttrStep.fromJSON");
+    return new AttrStep2(json.pos, json.attr, json.value);
+  }
+}
+Step2.jsonID("attr", AttrStep2);
+class DocAttrStep2 extends Step2 {
+  /**
+  Construct an attribute step.
+  */
+  constructor(attr2, value) {
+    super();
+    this.attr = attr2;
+    this.value = value;
+  }
+  apply(doc2) {
+    let attrs = /* @__PURE__ */ Object.create(null);
+    for (let name in doc2.attrs)
+      attrs[name] = doc2.attrs[name];
+    attrs[this.attr] = this.value;
+    let updated = doc2.type.create(attrs, doc2.content, doc2.marks);
+    return StepResult2.ok(updated);
+  }
+  getMap() {
+    return StepMap2.empty;
+  }
+  invert(doc2) {
+    return new DocAttrStep2(this.attr, doc2.attrs[this.attr]);
+  }
+  map(mapping) {
+    return this;
+  }
+  toJSON() {
+    return { stepType: "docAttr", attr: this.attr, value: this.value };
+  }
+  static fromJSON(schema2, json) {
+    if (typeof json.attr != "string")
+      throw new RangeError("Invalid input for DocAttrStep.fromJSON");
+    return new DocAttrStep2(json.attr, json.value);
+  }
+}
+Step2.jsonID("docAttr", DocAttrStep2);
+let TransformError3 = class extends Error {
+};
+TransformError3 = function TransformError4(message) {
+  let err = Error.call(this, message);
+  err.__proto__ = TransformError4.prototype;
+  return err;
+};
+TransformError3.prototype = Object.create(Error.prototype);
+TransformError3.prototype.constructor = TransformError3;
+TransformError3.prototype.name = "TransformError";
 const domIndex = function(node) {
   for (var index = 0; ; index++) {
     node = node.previousSibling;
@@ -6057,7 +7047,7 @@ const chrome = !!_chrome;
 const chrome_version = _chrome ? +_chrome[1] : 0;
 const safari = !ie$1 && !!nav && /Apple Computer/.test(nav.vendor);
 const ios = safari && (/Mobile\/\w+/.test(agent) || !!nav && nav.maxTouchPoints > 2);
-const mac$2 = ios || (nav ? /Mac/.test(nav.platform) : false);
+const mac$3 = ios || (nav ? /Mac/.test(nav.platform) : false);
 const windows = nav ? /Win/.test(nav.platform) : false;
 const android = /Android \d/.test(agent);
 const webkit = !!doc && "webkitFontSmoothing" in doc.documentElement.style;
@@ -6970,16 +7960,17 @@ class CompositionViewDesc extends ViewDesc {
   }
 }
 class MarkViewDesc extends ViewDesc {
-  constructor(parent, mark, dom, contentDOM) {
+  constructor(parent, mark, dom, contentDOM, spec) {
     super(parent, [], dom, contentDOM);
     this.mark = mark;
+    this.spec = spec;
   }
   static create(parent, mark, inline, view2) {
     let custom = view2.nodeViews[mark.type.name];
     let spec = custom && custom(mark, view2, inline);
     if (!spec || !spec.dom)
       spec = DOMSerializer.renderSpec(document, mark.type.spec.toDOM(mark, inline), null, mark.attrs);
-    return new MarkViewDesc(parent, mark, spec.dom, spec.contentDOM || spec.dom);
+    return new MarkViewDesc(parent, mark, spec.dom, spec.contentDOM || spec.dom, spec);
   }
   parseRule() {
     if (this.dirty & NODE_DIRTY || this.mark.type.spec.reparseInView)
@@ -7011,6 +8002,11 @@ class MarkViewDesc extends ViewDesc {
       nodes[i].parent = copy2;
     copy2.children = nodes;
     return copy2;
+  }
+  destroy() {
+    if (this.spec.destroy)
+      this.spec.destroy();
+    super.destroy();
   }
 }
 class NodeViewDesc extends ViewDesc {
@@ -7303,7 +8299,7 @@ class CustomNodeViewDesc extends NodeViewDesc {
   update(node, outerDeco, innerDeco, view2) {
     if (this.dirty == NODE_DIRTY)
       return false;
-    if (this.spec.update) {
+    if (this.spec.update && (this.node.type == node.type || this.spec.multiType)) {
       let result = this.spec.update(node, outerDeco, innerDeco);
       if (result)
         this.updateInner(node, outerDeco, innerDeco, view2);
@@ -8056,7 +9052,7 @@ function selectHorizontally(view2, dir, mods) {
       if (next && next instanceof NodeSelection)
         return apply(view2, next);
       return false;
-    } else if (!(mac$2 && mods.indexOf("m") > -1)) {
+    } else if (!(mac$3 && mods.indexOf("m") > -1)) {
       let $head = sel.$head, node = $head.textOffset ? null : dir < 0 ? $head.nodeBefore : $head.nodeAfter, desc;
       if (!node || node.isText)
         return false;
@@ -8267,7 +9263,7 @@ function selectVertically(view2, dir, mods) {
   let sel = view2.state.selection;
   if (sel instanceof TextSelection && !sel.empty || mods.indexOf("s") > -1)
     return false;
-  if (mac$2 && mods.indexOf("m") > -1)
+  if (mac$3 && mods.indexOf("m") > -1)
     return false;
   let { $from, $to } = sel;
   if (!$from.parent.inlineContent || view2.endOfTextblock(dir < 0 ? "up" : "down")) {
@@ -8334,23 +9330,23 @@ function getMods(event) {
 }
 function captureKeyDown(view2, event) {
   let code = event.keyCode, mods = getMods(event);
-  if (code == 8 || mac$2 && code == 72 && mods == "c") {
+  if (code == 8 || mac$3 && code == 72 && mods == "c") {
     return stopNativeHorizontalDelete(view2, -1) || skipIgnoredNodes(view2, -1);
-  } else if (code == 46 && !event.shiftKey || mac$2 && code == 68 && mods == "c") {
+  } else if (code == 46 && !event.shiftKey || mac$3 && code == 68 && mods == "c") {
     return stopNativeHorizontalDelete(view2, 1) || skipIgnoredNodes(view2, 1);
   } else if (code == 13 || code == 27) {
     return true;
-  } else if (code == 37 || mac$2 && code == 66 && mods == "c") {
+  } else if (code == 37 || mac$3 && code == 66 && mods == "c") {
     let dir = code == 37 ? findDirection(view2, view2.state.selection.from) == "ltr" ? -1 : 1 : -1;
     return selectHorizontally(view2, dir, mods) || skipIgnoredNodes(view2, dir);
-  } else if (code == 39 || mac$2 && code == 70 && mods == "c") {
+  } else if (code == 39 || mac$3 && code == 70 && mods == "c") {
     let dir = code == 39 ? findDirection(view2, view2.state.selection.from) == "ltr" ? 1 : -1 : 1;
     return selectHorizontally(view2, dir, mods) || skipIgnoredNodes(view2, dir);
-  } else if (code == 38 || mac$2 && code == 80 && mods == "c") {
+  } else if (code == 38 || mac$3 && code == 80 && mods == "c") {
     return selectVertically(view2, -1, mods) || skipIgnoredNodes(view2, -1);
-  } else if (code == 40 || mac$2 && code == 78 && mods == "c") {
+  } else if (code == 40 || mac$3 && code == 78 && mods == "c") {
     return safariDownArrowBug(view2) || selectVertically(view2, 1, mods) || skipIgnoredNodes(view2, 1);
-  } else if (mods == (mac$2 ? "m" : "c") && (code == 66 || code == 73 || code == 89 || code == 90)) {
+  } else if (mods == (mac$3 ? "m" : "c") && (code == 66 || code == 73 || code == 89 || code == 90)) {
     return true;
   }
   return false;
@@ -8544,11 +9540,14 @@ let _detachedDoc = null;
 function detachedDoc() {
   return _detachedDoc || (_detachedDoc = document.implementation.createHTMLDocument("title"));
 }
+let _policy = null;
 function maybeWrapTrusted(html2) {
   let trustedTypes = window.trustedTypes;
   if (!trustedTypes)
     return html2;
-  return trustedTypes.createPolicy("detachedDocument", { createHTML: (s) => s }).createHTML(html2);
+  if (!_policy)
+    _policy = trustedTypes.createPolicy("ProseMirrorClipboard", { createHTML: (s) => s });
+  return _policy.createHTML(html2);
 }
 function readHTML(html2) {
   let metas = /^(\s*<meta [^>]*>)*/.exec(html2);
@@ -8680,9 +9679,7 @@ editHandlers.keydown = (view2, _event) => {
   view2.input.lastKeyCodeTime = Date.now();
   if (android && chrome && event.keyCode == 13)
     return;
-  if (view2.domObserver.selectionChanged(view2.domSelectionRange()))
-    view2.domObserver.flush();
-  else if (event.keyCode != 229)
+  if (event.keyCode != 229)
     view2.domObserver.forceFlush();
   if (ios && event.keyCode == 13 && !event.ctrlKey && !event.altKey && !event.metaKey) {
     let now = Date.now();
@@ -8705,7 +9702,7 @@ editHandlers.keyup = (view2, event) => {
 };
 editHandlers.keypress = (view2, _event) => {
   let event = _event;
-  if (inOrNearComposition(view2, event) || !event.charCode || event.ctrlKey && !event.altKey || mac$2 && event.metaKey)
+  if (inOrNearComposition(view2, event) || !event.charCode || event.ctrlKey && !event.altKey || mac$3 && event.metaKey)
     return;
   if (view2.someProp("handleKeyPress", (f) => f(view2, event))) {
     event.preventDefault();
@@ -8815,7 +9812,7 @@ function defaultTripleClick(view2, inside, event) {
 function forceDOMFlush(view2) {
   return endComposition(view2);
 }
-const selectNodeModifier = mac$2 ? "metaKey" : "ctrlKey";
+const selectNodeModifier = mac$3 ? "metaKey" : "ctrlKey";
 handlers.mousedown = (view2, _event) => {
   let event = _event;
   view2.input.shiftKey = event.shiftKey;
@@ -9154,7 +10151,7 @@ class Dragging {
     this.node = node;
   }
 }
-const dragCopyModifier = mac$2 ? "altKey" : "ctrlKey";
+const dragCopyModifier = mac$3 ? "altKey" : "ctrlKey";
 handlers.dragstart = (view2, _event) => {
   let event = _event;
   let mouseDown = view2.input.mouseDown;
@@ -10060,9 +11057,6 @@ class DOMObserver {
         this.queue.push(mut);
     return this.queue;
   }
-  selectionChanged(sel) {
-    return !this.suppressingSelectionUpdates && !this.currentSelection.eq(sel) && hasFocusAndSelection(this.view) && !this.ignoreSelectionChange(sel);
-  }
   flush() {
     let { view: view2 } = this;
     if (!view2.docView || this.flushingSoon > -1)
@@ -10070,7 +11064,8 @@ class DOMObserver {
     let mutations = this.pendingRecords();
     if (mutations.length)
       this.queue = [];
-    let sel = view2.domSelectionRange(), newSel = this.selectionChanged(sel);
+    let sel = view2.domSelectionRange();
+    let newSel = !this.suppressingSelectionUpdates && !this.currentSelection.eq(sel) && hasFocusAndSelection(view2) && !this.ignoreSelectionChange(sel);
     let from = -1, to = -1, typeOver = false, added2 = [];
     if (view2.editable) {
       for (let i = 0; i < mutations.length; i++) {
@@ -11096,7 +12091,7 @@ var shift = {
   221: "}",
   222: '"'
 };
-var mac$1 = typeof navigator != "undefined" && /Mac/.test(navigator.platform);
+var mac$2 = typeof navigator != "undefined" && /Mac/.test(navigator.platform);
 var ie = typeof navigator != "undefined" && /MSIE \d|Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(navigator.userAgent);
 for (var i = 0; i < 10; i++) base[48 + i] = base[96 + i] = String(i);
 for (var i = 1; i <= 24; i++) base[i + 111] = "F" + i;
@@ -11106,7 +12101,7 @@ for (var i = 65; i <= 90; i++) {
 }
 for (var code in base) if (!shift.hasOwnProperty(code)) shift[code] = base[code];
 function keyName(event) {
-  var ignoreKey = mac$1 && event.metaKey && event.shiftKey && !event.ctrlKey && !event.altKey || ie && event.shiftKey && event.key && event.key.length == 1 || event.key == "Unidentified";
+  var ignoreKey = mac$2 && event.metaKey && event.shiftKey && !event.ctrlKey && !event.altKey || ie && event.shiftKey && event.key && event.key.length == 1 || event.key == "Unidentified";
   var name = !ignoreKey && event.key || (event.shiftKey ? shift : base)[event.keyCode] || event.key || "Unidentified";
   if (name == "Esc") name = "Escape";
   if (name == "Del") name = "Delete";
@@ -11116,7 +12111,7 @@ function keyName(event) {
   if (name == "Down") name = "ArrowDown";
   return name;
 }
-const mac = typeof navigator != "undefined" ? /Mac|iP(hone|[oa]d)/.test(navigator.platform) : false;
+const mac$1 = typeof navigator != "undefined" ? /Mac|iP(hone|[oa]d)/.test(navigator.platform) : false;
 function normalizeKeyName(name) {
   let parts = name.split(/-(?!$)/), result = parts[parts.length - 1];
   if (result == "Space")
@@ -11133,7 +12128,7 @@ function normalizeKeyName(name) {
     else if (/^s(hift)?$/i.test(mod))
       shift2 = true;
     else if (/^mod$/i.test(mod)) {
-      if (mac)
+      if (mac$1)
         meta = true;
       else
         ctrl = true;
@@ -11191,6 +12186,390 @@ function keydownHandler(bindings) {
     return false;
   };
 }
+const deleteSelection = (state2, dispatch) => {
+  if (state2.selection.empty)
+    return false;
+  if (dispatch)
+    dispatch(state2.tr.deleteSelection().scrollIntoView());
+  return true;
+};
+function atBlockStart(state2, view2) {
+  let { $cursor } = state2.selection;
+  if (!$cursor || (view2 ? !view2.endOfTextblock("backward", state2) : $cursor.parentOffset > 0))
+    return null;
+  return $cursor;
+}
+const joinBackward = (state2, dispatch, view2) => {
+  let $cursor = atBlockStart(state2, view2);
+  if (!$cursor)
+    return false;
+  let $cut = findCutBefore($cursor);
+  if (!$cut) {
+    let range = $cursor.blockRange(), target = range && liftTarget(range);
+    if (target == null)
+      return false;
+    if (dispatch)
+      dispatch(state2.tr.lift(range, target).scrollIntoView());
+    return true;
+  }
+  let before = $cut.nodeBefore;
+  if (deleteBarrier(state2, $cut, dispatch, -1))
+    return true;
+  if ($cursor.parent.content.size == 0 && (textblockAt(before, "end") || NodeSelection.isSelectable(before))) {
+    for (let depth = $cursor.depth; ; depth--) {
+      let delStep = replaceStep(state2.doc, $cursor.before(depth), $cursor.after(depth), Slice.empty);
+      if (delStep && delStep.slice.size < delStep.to - delStep.from) {
+        if (dispatch) {
+          let tr = state2.tr.step(delStep);
+          tr.setSelection(textblockAt(before, "end") ? Selection.findFrom(tr.doc.resolve(tr.mapping.map($cut.pos, -1)), -1) : NodeSelection.create(tr.doc, $cut.pos - before.nodeSize));
+          dispatch(tr.scrollIntoView());
+        }
+        return true;
+      }
+      if (depth == 1 || $cursor.node(depth - 1).childCount > 1)
+        break;
+    }
+  }
+  if (before.isAtom && $cut.depth == $cursor.depth - 1) {
+    if (dispatch)
+      dispatch(state2.tr.delete($cut.pos - before.nodeSize, $cut.pos).scrollIntoView());
+    return true;
+  }
+  return false;
+};
+function textblockAt(node, side, only = false) {
+  for (let scan = node; scan; scan = side == "start" ? scan.firstChild : scan.lastChild) {
+    if (scan.isTextblock)
+      return true;
+    if (only && scan.childCount != 1)
+      return false;
+  }
+  return false;
+}
+const selectNodeBackward = (state2, dispatch, view2) => {
+  let { $head, empty: empty2 } = state2.selection, $cut = $head;
+  if (!empty2)
+    return false;
+  if ($head.parent.isTextblock) {
+    if (view2 ? !view2.endOfTextblock("backward", state2) : $head.parentOffset > 0)
+      return false;
+    $cut = findCutBefore($head);
+  }
+  let node = $cut && $cut.nodeBefore;
+  if (!node || !NodeSelection.isSelectable(node))
+    return false;
+  if (dispatch)
+    dispatch(state2.tr.setSelection(NodeSelection.create(state2.doc, $cut.pos - node.nodeSize)).scrollIntoView());
+  return true;
+};
+function findCutBefore($pos) {
+  if (!$pos.parent.type.spec.isolating)
+    for (let i = $pos.depth - 1; i >= 0; i--) {
+      if ($pos.index(i) > 0)
+        return $pos.doc.resolve($pos.before(i + 1));
+      if ($pos.node(i).type.spec.isolating)
+        break;
+    }
+  return null;
+}
+function atBlockEnd(state2, view2) {
+  let { $cursor } = state2.selection;
+  if (!$cursor || (view2 ? !view2.endOfTextblock("forward", state2) : $cursor.parentOffset < $cursor.parent.content.size))
+    return null;
+  return $cursor;
+}
+const joinForward = (state2, dispatch, view2) => {
+  let $cursor = atBlockEnd(state2, view2);
+  if (!$cursor)
+    return false;
+  let $cut = findCutAfter($cursor);
+  if (!$cut)
+    return false;
+  let after = $cut.nodeAfter;
+  if (deleteBarrier(state2, $cut, dispatch, 1))
+    return true;
+  if ($cursor.parent.content.size == 0 && (textblockAt(after, "start") || NodeSelection.isSelectable(after))) {
+    let delStep = replaceStep(state2.doc, $cursor.before(), $cursor.after(), Slice.empty);
+    if (delStep && delStep.slice.size < delStep.to - delStep.from) {
+      if (dispatch) {
+        let tr = state2.tr.step(delStep);
+        tr.setSelection(textblockAt(after, "start") ? Selection.findFrom(tr.doc.resolve(tr.mapping.map($cut.pos)), 1) : NodeSelection.create(tr.doc, tr.mapping.map($cut.pos)));
+        dispatch(tr.scrollIntoView());
+      }
+      return true;
+    }
+  }
+  if (after.isAtom && $cut.depth == $cursor.depth - 1) {
+    if (dispatch)
+      dispatch(state2.tr.delete($cut.pos, $cut.pos + after.nodeSize).scrollIntoView());
+    return true;
+  }
+  return false;
+};
+const selectNodeForward = (state2, dispatch, view2) => {
+  let { $head, empty: empty2 } = state2.selection, $cut = $head;
+  if (!empty2)
+    return false;
+  if ($head.parent.isTextblock) {
+    if (view2 ? !view2.endOfTextblock("forward", state2) : $head.parentOffset < $head.parent.content.size)
+      return false;
+    $cut = findCutAfter($head);
+  }
+  let node = $cut && $cut.nodeAfter;
+  if (!node || !NodeSelection.isSelectable(node))
+    return false;
+  if (dispatch)
+    dispatch(state2.tr.setSelection(NodeSelection.create(state2.doc, $cut.pos)).scrollIntoView());
+  return true;
+};
+function findCutAfter($pos) {
+  if (!$pos.parent.type.spec.isolating)
+    for (let i = $pos.depth - 1; i >= 0; i--) {
+      let parent = $pos.node(i);
+      if ($pos.index(i) + 1 < parent.childCount)
+        return $pos.doc.resolve($pos.after(i + 1));
+      if (parent.type.spec.isolating)
+        break;
+    }
+  return null;
+}
+const newlineInCode = (state2, dispatch) => {
+  let { $head, $anchor } = state2.selection;
+  if (!$head.parent.type.spec.code || !$head.sameParent($anchor))
+    return false;
+  if (dispatch)
+    dispatch(state2.tr.insertText("\n").scrollIntoView());
+  return true;
+};
+function defaultBlockAt(match) {
+  for (let i = 0; i < match.edgeCount; i++) {
+    let { type } = match.edge(i);
+    if (type.isTextblock && !type.hasRequiredAttrs())
+      return type;
+  }
+  return null;
+}
+const exitCode = (state2, dispatch) => {
+  let { $head, $anchor } = state2.selection;
+  if (!$head.parent.type.spec.code || !$head.sameParent($anchor))
+    return false;
+  let above = $head.node(-1), after = $head.indexAfter(-1), type = defaultBlockAt(above.contentMatchAt(after));
+  if (!type || !above.canReplaceWith(after, after, type))
+    return false;
+  if (dispatch) {
+    let pos = $head.after(), tr = state2.tr.replaceWith(pos, pos, type.createAndFill());
+    tr.setSelection(Selection.near(tr.doc.resolve(pos), 1));
+    dispatch(tr.scrollIntoView());
+  }
+  return true;
+};
+const createParagraphNear = (state2, dispatch) => {
+  let sel = state2.selection, { $from, $to } = sel;
+  if (sel instanceof AllSelection || $from.parent.inlineContent || $to.parent.inlineContent)
+    return false;
+  let type = defaultBlockAt($to.parent.contentMatchAt($to.indexAfter()));
+  if (!type || !type.isTextblock)
+    return false;
+  if (dispatch) {
+    let side = (!$from.parentOffset && $to.index() < $to.parent.childCount ? $from : $to).pos;
+    let tr = state2.tr.insert(side, type.createAndFill());
+    tr.setSelection(TextSelection.create(tr.doc, side + 1));
+    dispatch(tr.scrollIntoView());
+  }
+  return true;
+};
+const liftEmptyBlock = (state2, dispatch) => {
+  let { $cursor } = state2.selection;
+  if (!$cursor || $cursor.parent.content.size)
+    return false;
+  if ($cursor.depth > 1 && $cursor.after() != $cursor.end(-1)) {
+    let before = $cursor.before();
+    if (canSplit(state2.doc, before)) {
+      if (dispatch)
+        dispatch(state2.tr.split(before).scrollIntoView());
+      return true;
+    }
+  }
+  let range = $cursor.blockRange(), target = range && liftTarget(range);
+  if (target == null)
+    return false;
+  if (dispatch)
+    dispatch(state2.tr.lift(range, target).scrollIntoView());
+  return true;
+};
+function splitBlockAs(splitNode) {
+  return (state2, dispatch) => {
+    let { $from, $to } = state2.selection;
+    if (state2.selection instanceof NodeSelection && state2.selection.node.isBlock) {
+      if (!$from.parentOffset || !canSplit(state2.doc, $from.pos))
+        return false;
+      if (dispatch)
+        dispatch(state2.tr.split($from.pos).scrollIntoView());
+      return true;
+    }
+    if (!$from.depth)
+      return false;
+    let types = [];
+    let splitDepth, deflt, atEnd = false, atStart = false;
+    for (let d = $from.depth; ; d--) {
+      let node = $from.node(d);
+      if (node.isBlock) {
+        atEnd = $from.end(d) == $from.pos + ($from.depth - d);
+        atStart = $from.start(d) == $from.pos - ($from.depth - d);
+        deflt = defaultBlockAt($from.node(d - 1).contentMatchAt($from.indexAfter(d - 1)));
+        types.unshift(atEnd && deflt ? { type: deflt } : null);
+        splitDepth = d;
+        break;
+      } else {
+        if (d == 1)
+          return false;
+        types.unshift(null);
+      }
+    }
+    let tr = state2.tr;
+    if (state2.selection instanceof TextSelection || state2.selection instanceof AllSelection)
+      tr.deleteSelection();
+    let splitPos = tr.mapping.map($from.pos);
+    let can = canSplit(tr.doc, splitPos, types.length, types);
+    if (!can) {
+      types[0] = deflt ? { type: deflt } : null;
+      can = canSplit(tr.doc, splitPos, types.length, types);
+    }
+    tr.split(splitPos, types.length, types);
+    if (!atEnd && atStart && $from.node(splitDepth).type != deflt) {
+      let first = tr.mapping.map($from.before(splitDepth)), $first = tr.doc.resolve(first);
+      if (deflt && $from.node(splitDepth - 1).canReplaceWith($first.index(), $first.index() + 1, deflt))
+        tr.setNodeMarkup(tr.mapping.map($from.before(splitDepth)), deflt);
+    }
+    if (dispatch)
+      dispatch(tr.scrollIntoView());
+    return true;
+  };
+}
+const splitBlock = splitBlockAs();
+const selectAll = (state2, dispatch) => {
+  if (dispatch)
+    dispatch(state2.tr.setSelection(new AllSelection(state2.doc)));
+  return true;
+};
+function joinMaybeClear(state2, $pos, dispatch) {
+  let before = $pos.nodeBefore, after = $pos.nodeAfter, index = $pos.index();
+  if (!before || !after || !before.type.compatibleContent(after.type))
+    return false;
+  if (!before.content.size && $pos.parent.canReplace(index - 1, index)) {
+    if (dispatch)
+      dispatch(state2.tr.delete($pos.pos - before.nodeSize, $pos.pos).scrollIntoView());
+    return true;
+  }
+  if (!$pos.parent.canReplace(index, index + 1) || !(after.isTextblock || canJoin(state2.doc, $pos.pos)))
+    return false;
+  if (dispatch)
+    dispatch(state2.tr.join($pos.pos).scrollIntoView());
+  return true;
+}
+function deleteBarrier(state2, $cut, dispatch, dir) {
+  let before = $cut.nodeBefore, after = $cut.nodeAfter, conn, match;
+  let isolated = before.type.spec.isolating || after.type.spec.isolating;
+  if (!isolated && joinMaybeClear(state2, $cut, dispatch))
+    return true;
+  let canDelAfter = !isolated && $cut.parent.canReplace($cut.index(), $cut.index() + 1);
+  if (canDelAfter && (conn = (match = before.contentMatchAt(before.childCount)).findWrapping(after.type)) && match.matchType(conn[0] || after.type).validEnd) {
+    if (dispatch) {
+      let end = $cut.pos + after.nodeSize, wrap2 = Fragment.empty;
+      for (let i = conn.length - 1; i >= 0; i--)
+        wrap2 = Fragment.from(conn[i].create(null, wrap2));
+      wrap2 = Fragment.from(before.copy(wrap2));
+      let tr = state2.tr.step(new ReplaceAroundStep2($cut.pos - 1, end, $cut.pos, end, new Slice(wrap2, 1, 0), conn.length, true));
+      let $joinAt = tr.doc.resolve(end + 2 * conn.length);
+      if ($joinAt.nodeAfter && $joinAt.nodeAfter.type == before.type && canJoin(tr.doc, $joinAt.pos))
+        tr.join($joinAt.pos);
+      dispatch(tr.scrollIntoView());
+    }
+    return true;
+  }
+  let selAfter = after.type.spec.isolating || dir > 0 && isolated ? null : Selection.findFrom($cut, 1);
+  let range = selAfter && selAfter.$from.blockRange(selAfter.$to), target = range && liftTarget(range);
+  if (target != null && target >= $cut.depth) {
+    if (dispatch)
+      dispatch(state2.tr.lift(range, target).scrollIntoView());
+    return true;
+  }
+  if (canDelAfter && textblockAt(after, "start", true) && textblockAt(before, "end")) {
+    let at = before, wrap2 = [];
+    for (; ; ) {
+      wrap2.push(at);
+      if (at.isTextblock)
+        break;
+      at = at.lastChild;
+    }
+    let afterText = after, afterDepth = 1;
+    for (; !afterText.isTextblock; afterText = afterText.firstChild)
+      afterDepth++;
+    if (at.canReplace(at.childCount, at.childCount, afterText.content)) {
+      if (dispatch) {
+        let end = Fragment.empty;
+        for (let i = wrap2.length - 1; i >= 0; i--)
+          end = Fragment.from(wrap2[i].copy(end));
+        let tr = state2.tr.step(new ReplaceAroundStep2($cut.pos - wrap2.length, $cut.pos + after.nodeSize, $cut.pos + afterDepth, $cut.pos + after.nodeSize - afterDepth, new Slice(end, wrap2.length, 0), 0, true));
+        dispatch(tr.scrollIntoView());
+      }
+      return true;
+    }
+  }
+  return false;
+}
+function selectTextblockSide(side) {
+  return function(state2, dispatch) {
+    let sel = state2.selection, $pos = side < 0 ? sel.$from : sel.$to;
+    let depth = $pos.depth;
+    while ($pos.node(depth).isInline) {
+      if (!depth)
+        return false;
+      depth--;
+    }
+    if (!$pos.node(depth).isTextblock)
+      return false;
+    if (dispatch)
+      dispatch(state2.tr.setSelection(TextSelection.create(state2.doc, side < 0 ? $pos.start(depth) : $pos.end(depth))));
+    return true;
+  };
+}
+const selectTextblockStart = selectTextblockSide(-1);
+const selectTextblockEnd = selectTextblockSide(1);
+function chainCommands(...commands) {
+  return function(state2, dispatch, view2) {
+    for (let i = 0; i < commands.length; i++)
+      if (commands[i](state2, dispatch, view2))
+        return true;
+    return false;
+  };
+}
+let backspace = chainCommands(deleteSelection, joinBackward, selectNodeBackward);
+let del = chainCommands(deleteSelection, joinForward, selectNodeForward);
+const pcBaseKeymap = {
+  "Enter": chainCommands(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock),
+  "Mod-Enter": exitCode,
+  "Backspace": backspace,
+  "Mod-Backspace": backspace,
+  "Shift-Backspace": backspace,
+  "Delete": del,
+  "Mod-Delete": del,
+  "Mod-a": selectAll
+};
+const macBaseKeymap = {
+  "Ctrl-h": pcBaseKeymap["Backspace"],
+  "Alt-Backspace": pcBaseKeymap["Mod-Backspace"],
+  "Ctrl-d": pcBaseKeymap["Delete"],
+  "Ctrl-Alt-Backspace": pcBaseKeymap["Mod-Delete"],
+  "Alt-Delete": pcBaseKeymap["Mod-Delete"],
+  "Alt-d": pcBaseKeymap["Mod-Delete"],
+  "Ctrl-a": selectTextblockStart,
+  "Ctrl-e": selectTextblockEnd
+};
+for (let key in pcBaseKeymap)
+  macBaseKeymap[key] = pcBaseKeymap[key];
+const mac = typeof navigator != "undefined" ? /Mac|iP(hone|[oa]d)/.test(navigator.platform) : typeof os != "undefined" && os.platform ? os.platform() == "darwin" : false;
+const baseKeymap = mac ? macBaseKeymap : pcBaseKeymap;
 function splitListItem(itemType, itemAttrs) {
   return function(state2, dispatch) {
     let { $from, $to, node } = state2.selection;
@@ -11227,7 +12606,7 @@ function splitListItem(itemType, itemAttrs) {
     let nextType = $to.pos == $from.end() ? grandParent.contentMatchAt(0).defaultType : null;
     let tr = state2.tr.delete($from.pos, $to.pos);
     let types = nextType ? [null, { type: nextType }] : void 0;
-    if (!canSplit(tr.doc, $from.pos, 2, types))
+    if (!canSplit$1(tr.doc, $from.pos, 2, types))
       return false;
     if (dispatch)
       dispatch(tr.split($from.pos, 2, types).scrollIntoView());
@@ -24434,12 +25813,42 @@ const schema = new Schema({
     }
   }
 });
+class ParagraphView {
+  constructor(node, view2) {
+    __publicField(this, "dom");
+    __publicField(this, "contentDOM");
+    __publicField(this, "node");
+    this.view = view2;
+    this.node = node;
+    this.view = view2;
+    const toDOM = this.node.type.spec.toDOM;
+    if (!toDOM) {
+      throw Error(`No toDOM method provided to node type ${this.node.type}`);
+    }
+    const { dom: _dom, contentDOM } = DOMSerializer.renderSpec(document, toDOM(this.node));
+    this.contentDOM = contentDOM;
+    this.dom = _dom;
+  }
+  destroy() {
+    while (this.dom.firstChild) {
+      this.dom.removeChild(this.dom.firstChild);
+    }
+  }
+}
 const state = EditorState.create({
   schema,
-  plugins: [keymap({ Enter: splitListItem(schema.nodes.list_item) })],
+  plugins: [
+    keymap({
+      Enter: splitListItem(schema.nodes.list_item),
+      Backspace: baseKeymap["Backspace"]
+    })
+  ],
   doc: schema.nodeFromJSON(defaultDoc)
 });
 const view = new EditorView(document.querySelector("#editor"), {
-  state
+  state,
+  nodeViews: {
+    paragraph: (n, v) => new ParagraphView(n, v)
+  }
 });
 applyDevTools(view);
