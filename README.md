@@ -2,13 +2,17 @@
 
 Insanity-inducing bug with ProseMirror, Android Chrome, NodeViews and list items splitting.
 
+# Description
+
+Apparently ProseMirror does not cancel native Android Chrome events as it should, letting them execute after which the operation is reversed. This causes annoying twichy behavior and probably relates to the problems with NodeViews as well.
+
+https://github.com/user-attachments/assets/38304859-e605-4433-ada3-2e9cda5a75b6
+
 ## Vanilla ProseMirror
 
 This bug happens with lesser extent with just vanilla ProseMirror. Here's two reproductions with the code https://github.com/TeemuKoivisto/prosemirror-chrome-android-lists-bug/tree/main/packages/bug
 
 https://teemukoivisto.github.io/prosemirror-chrome-android-lists-bug
-
-https://github.com/user-attachments/assets/38304859-e605-4433-ada3-2e9cda5a75b6
 
 https://github.com/user-attachments/assets/64ad607a-5a4b-4c29-8070-c53ce6547ebe
 
