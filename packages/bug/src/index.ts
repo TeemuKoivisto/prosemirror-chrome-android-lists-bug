@@ -1,10 +1,11 @@
 import { DOMSerializer, Node as PMNode, Schema } from 'prosemirror-model'
-import { EditorState } from 'prosemirror-state'
+import { EditorState, Plugin } from 'prosemirror-state'
 import { EditorView, NodeView } from 'prosemirror-view'
 import { keymap } from 'prosemirror-keymap'
 import { baseKeymap } from 'prosemirror-commands'
 import { splitListItem } from 'prosemirror-schema-list'
 import { applyDevTools } from 'prosemirror-dev-toolkit'
+import { backspace } from './commands'
 
 const defaultDoc = {
   type: 'doc',
@@ -124,19 +125,49 @@ class ParagraphView implements NodeView {
   }
 }
 
-const state = EditorState.create({
-  schema,
-  plugins: [
-    keymap({
-      Enter: splitListItem(schema.nodes.list_item),
-      Backspace: baseKeymap['Backspace']
-    })
-  ],
-  doc: schema.nodeFromJSON(defaultDoc)
+document.querySelector('#join')?.addEventListener('click', () => {
+  const tr = view.state.tr
+  const pos = 8
+  view.dispatch(tr.join(pos).scrollIntoView())
+  console.log(`join ${pos}`)
 })
 
+// const view = new EditorView(document.querySelector('#editor') as HTMLElement, {
+//   state: EditorState.create({
+//     schema,
+//     plugins: [
+//       keymap({
+//         // Enter: splitListItem(schema.nodes.list_item),
+//         Backspace: backspace
+//         // Backspace: baseKeymap['Backspace']
+//       })
+//     ],
+//     doc: schema.nodeFromJSON(defaultDoc)
+//   })
+// })
 const view = new EditorView(document.querySelector('#editor') as HTMLElement, {
-  state,
+  state: EditorState.create({
+    schema,
+    plugins: [
+      keymap({
+        Enter: splitListItem(schema.nodes.list_item),
+        Backspace: baseKeymap['Backspace']
+      }),
+      new Plugin({
+        props: {
+          handleDOMEvents: {
+            compositionstart: (view, event) => {
+              console.log('compositionstart', event)
+            },
+            keydown: (view, event) => {
+              console.log('keydown', event)
+            }
+          }
+        }
+      })
+    ],
+    doc: schema.nodeFromJSON(defaultDoc)
+  }),
   nodeViews: {
     paragraph: (n, v) => new ParagraphView(n, v)
   }

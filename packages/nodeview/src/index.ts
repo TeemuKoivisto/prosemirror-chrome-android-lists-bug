@@ -8,8 +8,8 @@ import { applyDevTools } from 'prosemirror-dev-toolkit'
 import { IdPlugin } from './IdPlugin'
 import { ParagraphView } from './ParagraphView'
 import { schema } from './schema'
-// import { splitListItem } from './splitListItemOrig'
-import { splitListItem } from './splitListItemTiptap'
+import { splitListItem } from './splitListItemOrig'
+// import { splitListItem } from './splitListItemTiptap'
 
 import defaultDoc from './default-pm-doc.json'
 

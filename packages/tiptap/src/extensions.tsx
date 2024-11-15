@@ -1,8 +1,10 @@
 import React from 'react'
 import { mergeAttributes, Node } from '@tiptap/core'
 import { NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
+import { Plugin } from '@tiptap/pm/state'
 // import { splitListItem } from './splitListItemTiptap'
-// import { splitListItem } from './splitListItemOrig'
+import { splitListItem } from './splitListItemOrig'
+import { ParagraphView } from './ParagraphView'
 
 export const Document = Node.create({
   name: 'doc',
@@ -18,7 +20,7 @@ export const Text = Node.create({
 const ParagraphComponent = () => {
   return (
     <NodeViewWrapper>
-      <NodeViewContent as="p" />
+      <NodeViewContent />
     </NodeViewWrapper>
   )
 }
@@ -55,8 +57,23 @@ export const Paragraph = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(ParagraphComponent)
+    return ReactNodeViewRenderer(ParagraphComponent, {
+      // @BUG -> THIS FIXES EVERYTHING!!!!
+      contentDOMElementTag: 'p'
+    })
   }
+
+  // addProseMirrorPlugins() {
+  //   return [
+  //     new Plugin({
+  //       props: {
+  //         nodeViews: {
+  //           paragraph: (n, v) => new ParagraphView(n, v)
+  //         }
+  //       }
+  //     })
+  //   ]
+  // }
 })
 
 export const ListItem = Node.create({
@@ -89,8 +106,8 @@ export const ListItem = Node.create({
   addKeyboardShortcuts() {
     const nodeType = this.editor.schema.nodes[this.name]
     return {
-      Enter: () => this.editor.commands.splitListItem(nodeType)
-      // Enter: () => this.editor.commands.command(splitListItem(nodeType))
+      // Enter: () => this.editor.commands.splitListItem(nodeType)
+      Enter: () => this.editor.commands.command(splitListItem(nodeType))
     }
   }
 })

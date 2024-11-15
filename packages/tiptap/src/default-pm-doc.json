@@ -15,7 +15,7 @@
               "content": [
                 {
                   "type": "text",
-                  "text": "item1"
+                  "text": "one"
                 }
               ]
             }
@@ -32,7 +32,7 @@
               "content": [
                 {
                   "type": "text",
-                  "text": "item2"
+                  "text": "two"
                 }
               ]
             }
