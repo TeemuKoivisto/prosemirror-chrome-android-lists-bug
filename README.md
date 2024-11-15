@@ -22,11 +22,17 @@ https://github.com/user-attachments/assets/f0d150a8-bd06-432a-8fb0-d5b626983ba4
 
 ## Tiptap
 
-Here the initial enter causes the error, subsequent splits do not. I'm pretty sure because the paragraph ids are either erased or equal. Adding an id plugin to set paragraph attributes (eg ids) in an `appendTransaction` will persist this bug.
+EDIT: Okay this was a different bug, related to the same issue (mobile Chrome is dumb). It seems you _really_ should use the original DOM element to render your content into, not a random `<div>` wrapper as is the default with TipTap.
 
 https://github.com/user-attachments/assets/3159ae3f-3f9c-4306-be61-f79a8e7526da
 
-This is similar to bug above which is probably due to Android and ProseMirror conflicting on how to handle list item splits. But not sure. NodeViews however make it a lot more detrimental to user experience.
+Here you can see the editor behave erratically, caused by the contentEditable within `<div>` triggering some quirky event. Changing the NodeViewContent from:
+
+`<NodeViewContent as="p"/>` to `<NodeViewContent />`
+
+and adding `contentDOMElementTag: 'p'` to `ReactNodeViewRenderer` options fixes everything.
+
+https://github.com/ueberdosis/tiptap/issues/5711
 
 ## How to reproduce locally
 
